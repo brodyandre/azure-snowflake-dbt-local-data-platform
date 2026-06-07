@@ -52,10 +52,20 @@ As fontes abaixo sao sinteticas, pequenas e consistentes entre si. Elas existem 
 | `payments.json` | JSON | Gateway de pagamentos | Simular liquidacao, falha, pendencia e estorno de pagamentos |
 | `events_sample.jsonl` | JSON Lines | Telemetria digital e canais de atendimento | Simular navegacao, conversao e sinais comportamentais para analytics |
 
+## Padroes de codigo Python
+
+Os utilitarios Python deste projeto seguem algumas convencoes simples para manter o laboratorio legivel, testavel e facil de evoluir.
+
+- `pathlib` e usado para construir caminhos de forma portavel e evitar caminhos absolutos fixos.
+- Logs estruturados com `logging` padrao ajudam na observabilidade local sem espalhar `print` pelos modulos.
+- Funcoes reutilizaveis concentram leituras, escritas, configuracao e auditoria para reduzir duplicacao.
+- A separacao entre `config`, `io`, `logger` e `audit` facilita manutencao, testes e extensao incremental.
+- O foco e manter codigo simples, local-first, cloud-compatible e facil de entender por outras pessoas do time.
+
 ## Status inicial do projeto
 
-- Etapa atual: estrutura base com servicos locais e fontes de dados sinteticas.
-- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio e datasets pequenos para testes.
+- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas e utilitarios Python reutilizaveis.
+- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes e base Python para ingestao, I/O e auditoria.
 - Sem pipelines implementados nesta fase.
 - Sem uso de servicos Azure reais.
 - Sem uso de Snowflake real.
