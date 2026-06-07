@@ -1,0 +1,13 @@
+customer_id,full_name,email,city,state,created_at,customer_segment
+C001,Lia Monteiro,lia.monteiro@example.com,Sao Paulo,SP,2024-01-15T09:12:00,retail
+C002,Bruno Teles,bruno.teles@example.com,Rio de Janeiro,RJ,2024-02-03T14:45:00,digital
+C003,Camila Duarte,camila.duarte@example.com,Belo Horizonte,MG,2024-02-20T11:05:00,premium
+C004,Marcos Viana,marcos.viana@example.com,Curitiba,PR,2024-03-11T16:20:00,corporate
+C005,Nina Falcao,nina.falcao@example.com,Salvador,BA,2024-03-28T10:10:00,retail
+C006,Otavio Luz,otavio.luz@example.com,Campinas,SP,2024-04-09T08:30:00,digital
+C007,Paula Rezende,paula.rezende@example.com,Niteroi,RJ,2024-05-14T13:40:00,premium
+C008,Rafael Braga,rafael.braga@example.com,Uberlandia,MG,2024-06-02T17:55:00,corporate
+C009,Taina Moura,taina.moura@example.com,Londrina,PR,2024-07-19T12:25:00,retail
+C010,Yuri Sampaio,yuri.sampaio@example.com,Feira de Santana,BA,2024-08-07T09:05:00,digital
+C011,Ana Cordeiro,ana.cordeiro@example.com,Santos,SP,2024-09-12T15:18:00,corporate
+C012,Diego Ferraz,diego.ferraz@example.com,Juiz de Fora,MG,2024-10-01T10:50:00,premium

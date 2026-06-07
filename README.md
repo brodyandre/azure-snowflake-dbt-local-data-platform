@@ -8,7 +8,7 @@ Construir um laboratorio local de Engenharia de Dados para demonstrar, de forma 
 
 Este repositorio servira como ambiente pratico para estudar e demonstrar ingestao batch, streaming, modelagem analitica com dbt, qualidade de dados, governanca, consultas SQL, automacao CI/CD e documentacao tecnica.
 
-Nesta fase inicial, o projeto estabelece apenas a base estrutural do repositorio, com diretorios, convencoes e documentos-guia para as proximas etapas.
+Nesta fase atual, o projeto ja conta com a base estrutural do repositorio, servicos locais via Docker Compose e fontes sinteticas pequenas para apoiar as proximas etapas de pipeline, modelagem e validacao.
 
 ## Tecnologias planejadas
 
@@ -41,10 +41,21 @@ make ps
 docker compose ps
 ```
 
+## Fontes de dados simuladas
+
+As fontes abaixo sao sinteticas, pequenas e consistentes entre si. Elas existem para apoiar testes de pipeline, modelagem, SQL, qualidade de dados e cenarios de streaming, sem depender de dados reais.
+
+| Fonte | Formato | Sistema simulado | Finalidade no projeto |
+| --- | --- | --- | --- |
+| `customers.csv` | CSV | CRM / cadastro mestre de clientes | Base de referencia para relacionamento de entidades e segmentacao |
+| `orders.csv` | CSV | Plataforma de vendas multicanal | Simular pedidos, status comerciais e metricas de receita |
+| `payments.json` | JSON | Gateway de pagamentos | Simular liquidacao, falha, pendencia e estorno de pagamentos |
+| `events_sample.jsonl` | JSON Lines | Telemetria digital e canais de atendimento | Simular navegacao, conversao e sinais comportamentais para analytics |
+
 ## Status inicial do projeto
 
-- Etapa atual: estrutura base com servicos locais via Docker Compose.
-- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial e infraestrutura local de apoio.
+- Etapa atual: estrutura base com servicos locais e fontes de dados sinteticas.
+- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio e datasets pequenos para testes.
 - Sem pipelines implementados nesta fase.
 - Sem uso de servicos Azure reais.
 - Sem uso de Snowflake real.
