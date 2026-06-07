@@ -9,6 +9,7 @@ description = "Laboratorio local para simular padroes de Engenharia de Dados ins
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "confluent-kafka>=2.5.0,<3.0.0",
     "pandas>=2.2.0,<3.0.0",
     "pyarrow>=17.0.0,<18.0.0",
     "python-dotenv>=1.0.1,<2.0.0",

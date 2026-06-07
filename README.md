@@ -76,6 +76,8 @@ python -m compileall src
 
 O `Makefile` tambem usa a variavel `PYTHON` com valor padrao `python3`, o que ajuda a manter os comandos portaveis nesse contexto.
 
+Quando a `.venv` existe, o `Makefile` passa a preferir automaticamente `.venv/bin/python`, o que simplifica a execucao dos targets locais sem depender do Python global do sistema.
+
 ## Pipeline batch
 
 O pipeline batch local tem como objetivo ler os arquivos sinteticos em `data/samples`, aplicar validacoes minimas e gravar uma versao tratada em `data/landing` no formato Parquet.
@@ -125,10 +127,52 @@ Localizacao do log de auditoria:
 
 - `evidence/execution-logs/pipeline_audit.jsonl`
 
+## Pipeline streaming
+
+O pipeline streaming local demonstra um fluxo de eventos inspirado em Azure Event Hubs, mas executando localmente com Redpanda como broker Kafka-compatible, sem uso de servicos reais de nuvem.
+
+Redpanda simula localmente um padrao semelhante ao Azure Event Hubs / Kafka, permitindo publicar e consumir eventos de forma simples, reproduzivel e adequada para testes de integracao.
+
+Origem dos eventos:
+
+- `data/samples/events_sample.jsonl`
+
+Topico usado:
+
+- `customer-events`
+
+Destino dos eventos consumidos:
+
+- `data/landing/events/events.jsonl`
+
+Comandos para subir o ambiente:
+
+```bash
+make up
+docker compose ps
+```
+
+Comandos para executar:
+
+```bash
+make streaming-producer
+make streaming-consumer
+```
+
+Comando opcional:
+
+```bash
+make streaming-demo
+```
+
+Se o Redpanda Console estiver habilitado, ele pode ser acessado em:
+
+- `http://localhost:8080`
+
 ## Status inicial do projeto
 
-- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis e pipeline batch local.
-- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes, base Python para ingestao, I/O, auditoria e primeira ingestao batch.
+- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis e pipelines batch e streaming locais.
+- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes, base Python para ingestao, I/O, auditoria, ingestao batch e demonstracao streaming local.
 - Sem uso de servicos Azure reais.
 - Sem uso de Snowflake real.
 

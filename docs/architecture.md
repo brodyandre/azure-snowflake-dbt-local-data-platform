@@ -23,6 +23,18 @@ Definir a arquitetura inicial de um laboratorio local de Engenharia de Dados ins
 - Redpanda ou Apache Kafka para representar padroes de streaming inspirados em Azure Event Hubs.
 - dbt para modelagem, testes e organizacao das transformacoes.
 
+## Fluxo streaming local
+
+O fluxo streaming proposto para este laboratorio segue o caminho abaixo:
+
+`events_sample.jsonl`
+-> producer Python
+-> Redpanda topic `customer-events`
+-> consumer Python
+-> `data/landing/events/events.jsonl`
+
+Esse fluxo permite demonstrar publicacao e consumo de eventos em ambiente local, sem depender de Azure real, mantendo o desenho compativel com padroes de event streaming usados em arquiteturas cloud.
+
 ## Principios arquiteturais
 
 - Evolucao incremental do repositorio.

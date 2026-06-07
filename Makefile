@@ -1,6 +1,13 @@
+VENV_PYTHON := .venv/bin/python
 PYTHON ?= python3
 
-.PHONY: up down logs ps clean install lint format test check batch
+ifneq ($(origin PYTHON), command line)
+ifneq ($(wildcard $(VENV_PYTHON)),)
+PYTHON := $(VENV_PYTHON)
+endif
+endif
+
+.PHONY: up down logs ps clean install lint format test check batch streaming-producer streaming-consumer streaming-demo
 
 up:
 	docker compose up -d
@@ -33,3 +40,13 @@ check: lint test
 
 batch:
 	$(PYTHON) -m src.batch.run_batch_pipeline
+
+streaming-producer:
+	$(PYTHON) -m src.streaming.producer_events
+
+streaming-consumer:
+	$(PYTHON) -m src.streaming.consumer_events --max-events 20
+
+streaming-demo:
+	$(PYTHON) -m src.streaming.producer_events
+	$(PYTHON) -m src.streaming.consumer_events --max-events 20
