@@ -76,11 +76,59 @@ python -m compileall src
 
 O `Makefile` tambem usa a variavel `PYTHON` com valor padrao `python3`, o que ajuda a manter os comandos portaveis nesse contexto.
 
+## Pipeline batch
+
+O pipeline batch local tem como objetivo ler os arquivos sinteticos em `data/samples`, aplicar validacoes minimas e gravar uma versao tratada em `data/landing` no formato Parquet.
+
+Arquivos de origem:
+
+- `data/samples/customers.csv`
+- `data/samples/orders.csv`
+- `data/samples/payments.json`
+
+Arquivos de destino:
+
+- `data/landing/customers/customers.parquet`
+- `data/landing/orders/orders.parquet`
+- `data/landing/payments/payments.parquet`
+
+Validacoes realizadas:
+
+- Presenca das colunas obrigatorias em cada fonte.
+- Validacao de identificadores obrigatorios sem nulos ou valores vazios.
+- Conversao de campos de data para datetime.
+- Conversao de valores monetarios para tipo numerico.
+- Remocao de espacos extras em campos textuais relevantes.
+- Criacao da coluna `net_amount` na ingestao de pedidos.
+- Registro de auditoria em caso de sucesso e falha.
+
+Comando para executar:
+
+```bash
+make batch
+```
+
+Saida esperada:
+
+- Logs claros indicando inicio e fim de cada etapa.
+- Arquivos Parquet gerados em `data/landing`.
+- Registro de auditoria por pipeline executado.
+- Codigo de saida diferente de zero se alguma etapa falhar.
+
+Localizacao dos arquivos gerados:
+
+- `data/landing/customers/customers.parquet`
+- `data/landing/orders/orders.parquet`
+- `data/landing/payments/payments.parquet`
+
+Localizacao do log de auditoria:
+
+- `evidence/execution-logs/pipeline_audit.jsonl`
+
 ## Status inicial do projeto
 
-- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas e utilitarios Python reutilizaveis.
-- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes e base Python para ingestao, I/O e auditoria.
-- Sem pipelines implementados nesta fase.
+- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis e pipeline batch local.
+- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes, base Python para ingestao, I/O, auditoria e primeira ingestao batch.
 - Sem uso de servicos Azure reais.
 - Sem uso de Snowflake real.
 

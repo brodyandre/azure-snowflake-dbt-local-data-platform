@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: up down logs ps clean install lint format test check
+.PHONY: up down logs ps clean install lint format test check batch
 
 up:
 	docker compose up -d
@@ -30,3 +30,6 @@ test:
 	$(PYTHON) -m pytest
 
 check: lint test
+
+batch:
+	$(PYTHON) -m src.batch.run_batch_pipeline
