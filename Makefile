@@ -1,3 +1,5 @@
+PYTHON ?= python3
+
 .PHONY: up down logs ps clean install lint format test check
 
 up:
@@ -16,15 +18,15 @@ clean:
 	docker compose down -v
 
 install:
-	python -m pip install -r requirements.txt
+	$(PYTHON) -m pip install -r requirements.txt
 
 lint:
-	python -m ruff check .
+	$(PYTHON) -m ruff check .
 
 format:
-	python -m ruff format .
+	$(PYTHON) -m ruff format .
 
 test:
-	python -m pytest
+	$(PYTHON) -m pytest
 
 check: lint test

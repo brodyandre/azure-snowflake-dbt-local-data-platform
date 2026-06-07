@@ -62,6 +62,20 @@ Os utilitarios Python deste projeto seguem algumas convencoes simples para mante
 - A separacao entre `config`, `io`, `logger` e `audit` facilita manutencao, testes e extensao incremental.
 - O foco e manter codigo simples, local-first, cloud-compatible e facil de entender por outras pessoas do time.
 
+## Ambiente Python no WSL2
+
+Em ambientes WSL2 com Ubuntu, o interpretador disponivel por padrao pode ser `python3`. O fluxo recomendado para preparar o ambiente local e:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python -m compileall src
+```
+
+O `Makefile` tambem usa a variavel `PYTHON` com valor padrao `python3`, o que ajuda a manter os comandos portaveis nesse contexto.
+
 ## Status inicial do projeto
 
 - Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas e utilitarios Python reutilizaveis.
