@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local environment files
+.env
+
+# Build and packaging
+build/
+dist/
+*.egg-info/
+
+# dbt artifacts
+dbt_packages/
+target/
+logs/
+
+# Local analytical files
+*.duckdb
+*.duckdb-wal
+
+# Local storage and execution artifacts
+.azurite/
+data/raw/*
+!data/raw/.gitkeep
+data/landing/*
+!data/landing/.gitkeep
+evidence/execution-logs/*
+!evidence/execution-logs/.gitkeep
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
