@@ -21,10 +21,30 @@ Nesta fase inicial, o projeto estabelece apenas a base estrutural do repositorio
 - GitHub Actions para CI/CD local ao repositorio.
 - Documentacao em Markdown para registrar requisitos, arquitetura e governanca.
 
+## Servicos locais
+
+Os servicos abaixo sao executados com Docker Compose para manter o laboratorio local-first, simples de subir e compativel com uma futura migracao para cloud.
+
+| Servico | Funcao no projeto | Porta local | Tecnologia cloud simulada |
+| --- | --- | --- | --- |
+| Azurite | Simula armazenamento de objetos e zonas de aterrissagem para ingestao de dados | `10000`, `10001`, `10002` | Azure Blob Storage |
+| Redpanda | Broker Kafka-compatible para eventos, streaming e integracao entre produtores e consumidores | `9092`, `29092`, `9644` | Padrao de streaming inspirado em Azure Event Hubs / Kafka |
+| Redpanda Console | Interface web local para visualizar topicos, mensagens e estado operacional do broker | `8080` | Console local de observacao para streaming |
+
+Comandos operacionais:
+
+```bash
+make up
+make down
+make logs
+make ps
+docker compose ps
+```
+
 ## Status inicial do projeto
 
-- Etapa atual: inicializacao da estrutura base.
-- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao e documentacao inicial.
+- Etapa atual: estrutura base com servicos locais via Docker Compose.
+- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial e infraestrutura local de apoio.
 - Sem pipelines implementados nesta fase.
 - Sem uso de servicos Azure reais.
 - Sem uso de Snowflake real.

@@ -1,0 +1,98 @@
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.31.0
+    container_name: local-azurite
+    command: >
+      azurite
+      --blobHost 0.0.0.0
+      --queueHost 0.0.0.0
+      --tableHost 0.0.0.0
+      --location /data
+      --debug /data/debug.log
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - azurite-data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "const net=require('net');const socket=net.connect(10000,'127.0.0.1');socket.on('connect',()=>{socket.end();process.exit(0)});socket.on('error',()=>process.exit(1));setTimeout(()=>process.exit(1),3000)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - local-data-platform
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.18
+    container_name: local-redpanda
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 1G
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --check=false
+      - --kafka-addr
+      - internal://0.0.0.0:29092,external://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - internal://local-redpanda:29092,external://localhost:9092
+      - --pandaproxy-addr
+      - internal://0.0.0.0:8082
+      - --advertise-pandaproxy-addr
+      - internal://local-redpanda:8082
+      - --rpc-addr
+      - 0.0.0.0:33145
+      - --advertise-rpc-addr
+      - local-redpanda:33145
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+      - "9644:9644"
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - rpk cluster info -X brokers=127.0.0.1:9092 >/dev/null 2>&1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - local-data-platform
+
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:v2.7.2
+    container_name: local-redpanda-console
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: local-redpanda:29092
+      REDPANDA_ADMINAPI_ENABLED: "true"
+      REDPANDA_ADMINAPI_URLS: http://local-redpanda:9644
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - local-data-platform
+
+volumes:
+  azurite-data:
+  redpanda-data:
+
+networks:
+  local-data-platform:

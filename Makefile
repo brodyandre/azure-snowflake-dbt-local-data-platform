@@ -1,4 +1,19 @@
-.PHONY: install lint format test check
+.PHONY: up down logs ps clean install lint format test check
+
+up:
+	docker compose up -d
+
+down:
+	docker compose down
+
+logs:
+	docker compose logs -f
+
+ps:
+	docker compose ps
+
+clean:
+	docker compose down -v
 
 install:
 	python -m pip install -r requirements.txt
