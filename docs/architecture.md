@@ -35,6 +35,18 @@ O fluxo streaming proposto para este laboratorio segue o caminho abaixo:
 
 Esse fluxo permite demonstrar publicacao e consumo de eventos em ambiente local, sem depender de Azure real, mantendo o desenho compativel com padroes de event streaming usados em arquiteturas cloud.
 
+## Camada ELT com dbt
+
+O fluxo ELT planejado para a camada analitica local segue o caminho abaixo:
+
+`data/landing`
+-> `dbt staging`
+-> `dbt intermediate`
+-> `dbt marts`
+-> `data/warehouse/local_warehouse.duckdb`
+
+Nessa abordagem, o dbt organiza as transformacoes em camadas e o DuckDB funciona como warehouse analitico local. Em um ambiente cloud, o profile do dbt poderia apontar para Snowflake, preservando os conceitos de modelagem sem afirmar que Snowflake roda localmente.
+
 ## Principios arquiteturais
 
 - Evolucao incremental do repositorio.

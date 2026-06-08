@@ -1,0 +1,108 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Camada staging de clientes lidos da landing local."
+    columns:
+      - name: customer_id
+        description: "Identificador unico do cliente."
+        tests:
+          - not_null
+          - unique
+      - name: full_name
+        description: "Nome completo tratado."
+      - name: email
+        description: "E-mail tratado em lowercase."
+      - name: city
+        description: "Cidade tratada."
+      - name: state
+        description: "UF tratada em uppercase."
+      - name: created_at
+        description: "Timestamp de criacao do cliente."
+      - name: customer_segment
+        description: "Segmento comercial padronizado."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["retail", "corporate", "premium", "digital"]
+
+  - name: stg_orders
+    description: "Camada staging de pedidos lidos da landing local."
+    columns:
+      - name: order_id
+        description: "Identificador unico do pedido."
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Identificador do cliente associado ao pedido."
+      - name: order_date
+        description: "Data do pedido."
+      - name: sales_channel
+        description: "Canal comercial tratado."
+      - name: order_status
+        description: "Status operacional do pedido."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["completed", "canceled", "pending"]
+      - name: gross_amount
+        description: "Valor bruto do pedido."
+      - name: discount_amount
+        description: "Valor de desconto aplicado."
+      - name: net_amount
+        description: "Valor liquido calculado como gross_amount - discount_amount."
+
+  - name: stg_payments
+    description: "Camada staging de pagamentos lidos da landing local."
+    columns:
+      - name: payment_id
+        description: "Identificador unico do pagamento."
+        tests:
+          - not_null
+          - unique
+      - name: order_id
+        description: "Identificador do pedido associado ao pagamento."
+      - name: payment_method
+        description: "Metodo de pagamento tratado."
+      - name: payment_status
+        description: "Status do pagamento."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["paid", "pending", "failed", "refunded"]
+      - name: paid_amount
+        description: "Valor pago ou esperado para pagamento."
+      - name: paid_at
+        description: "Timestamp de pagamento quando disponivel."
+
+  - name: stg_events
+    description: "Camada staging de eventos consumidos localmente do Redpanda."
+    columns:
+      - name: event_id
+        description: "Identificador unico do evento."
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Identificador do cliente relacionado ao evento."
+      - name: event_type
+        description: "Tipo do evento tratado."
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - page_view
+                  - product_view
+                  - add_to_cart
+                  - checkout_started
+                  - purchase_completed
+                  - support_contact
+      - name: event_timestamp
+        description: "Timestamp de ocorrencia do evento."
+      - name: source_system
+        description: "Sistema de origem do evento."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["web_app", "mobile_app", "crm", "ecommerce"]

@@ -169,10 +169,35 @@ Se o Redpanda Console estiver habilitado, ele pode ser acessado em:
 
 - `http://localhost:8080`
 
+## Transformacoes com dbt
+
+O dbt neste projeto tem como objetivo demonstrar ELT local, padronizacao de modelos SQL e organizacao em camadas sobre o DuckDB como warehouse analitico local.
+
+Camadas do projeto dbt:
+
+- `staging`: padroniza tipos, nomes e limpeza basica das fontes vindas da landing.
+- `intermediate`: camada reservada para combinacoes e regras de negocio reutilizaveis.
+- `marts`: camada final para tabelas analiticas prontas para consumo.
+
+O warehouse local usado pelo dbt e o DuckDB em `data/warehouse/local_warehouse.duckdb`. Em um ambiente cloud, esse mesmo profile poderia apontar para Snowflake, mantendo a mesma disciplina de modelagem e testes, sem afirmar que Snowflake roda localmente.
+
+Comandos:
+
+```bash
+make dbt-debug
+make dbt-run
+make dbt-test
+make dbt-build
+```
+
+O repositorio inclui `dbt/profiles.yml.example` e tambem um `dbt/profiles.yml` local nao sensivel, versionado apenas para facilitar a execucao com DuckDB local. Nao ha credenciais reais nesse profile.
+
+O modelo `stg_events` depende da existencia de `data/landing/events/events.jsonl`. Se esse arquivo ainda nao tiver sido gerado, rode `make streaming-demo` antes de `make dbt-build`.
+
 ## Status inicial do projeto
 
-- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis e pipelines batch e streaming locais.
-- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes, base Python para ingestao, I/O, auditoria, ingestao batch e demonstracao streaming local.
+- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis, pipelines batch e streaming locais e camada ELT com dbt.
+- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes, base Python para ingestao, I/O, auditoria, ingestao batch, demonstracao streaming local e configuracao dbt com DuckDB.
 - Sem uso de servicos Azure reais.
 - Sem uso de Snowflake real.
 

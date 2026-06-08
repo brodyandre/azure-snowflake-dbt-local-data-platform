@@ -1,0 +1,7 @@
+azure_snowflake_dbt_local_data_platform:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/warehouse/local_warehouse.duckdb
+      threads: 4

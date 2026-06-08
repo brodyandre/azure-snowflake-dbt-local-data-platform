@@ -21,6 +21,7 @@ dist/
 dbt_packages/
 target/
 logs/
+dbt/.user.yml
 
 # Local analytical files
 *.duckdb

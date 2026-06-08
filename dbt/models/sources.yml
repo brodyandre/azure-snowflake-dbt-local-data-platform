@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: landing
+    description: "Fontes locais tratadas na camada landing e lidas diretamente pelo DuckDB."
+    meta:
+      external_location: "../data/landing/{name}/{name}.parquet"
+    tables:
+      - name: customers
+        description: "Clientes tratados pelo pipeline batch e persistidos em Parquet."
+      - name: orders
+        description: "Pedidos tratados pelo pipeline batch e persistidos em Parquet."
+      - name: payments
+        description: "Pagamentos tratados pelo pipeline batch e persistidos em Parquet."
+      - name: events
+        description: "Eventos consumidos do Redpanda e persistidos em JSONL. Requer a execucao previa do pipeline streaming."
+        meta:
+          external_location: "read_ndjson('../data/landing/events/events.jsonl')"
