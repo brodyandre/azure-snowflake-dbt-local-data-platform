@@ -216,6 +216,30 @@ As camadas do projeto seguem papeis complementares:
 | `fct_orders` | marts | Disponibilizar a fato de pedidos com contexto de pagamento | table |
 | `mart_customer_360` | marts | Consolidar indicadores de clientes, pedidos e eventos em uma visao 360 | table |
 
+## Qualidade de dados
+
+A camada de qualidade de dados deste projeto existe para demonstrar governanca tecnica, integridade de dados e validacao automatizada em um laboratorio local-first.
+
+Os testes `dbt` verificam regras diretamente nos modelos analiticos do DuckDB, com foco em `not_null`, `unique`, `accepted_values` e `relationships`. Ja os testes Python com `pytest` validam contratos dos arquivos de entrada, geracao dos artefatos de landing e consistencia basica dos logs de auditoria.
+
+Validacoes implementadas:
+
+- integridade de chaves como `customer_id` e `order_id`
+- dominios esperados para status de pagamento e lifecycle
+- relacionamento entre clientes, pedidos, pagamentos e eventos
+- presenca de colunas obrigatorias nas fontes sinteticas e nos parquet de landing
+- consistencia estrutural do arquivo `pipeline_audit.jsonl`
+
+O relatorio local de qualidade e gerado em `evidence/execution-logs/data_quality_report.md`.
+
+Comandos:
+
+```bash
+make test
+make quality-report
+make validate
+```
+
 ## Status inicial do projeto
 
 - Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis, pipelines batch e streaming locais e camada ELT com dbt.

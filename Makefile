@@ -13,7 +13,7 @@ ifneq ($(wildcard $(VENV_DBT)),)
 DBT_CMD := ../$(VENV_DBT)
 endif
 
-.PHONY: up down logs ps clean install lint format test check batch streaming-producer streaming-consumer streaming-demo dbt-debug dbt-run dbt-test dbt-build
+.PHONY: up down logs ps clean install lint format test check batch streaming-producer streaming-consumer streaming-demo dbt-debug dbt-run dbt-test dbt-build quality-report validate
 
 up:
 	docker compose up -d
@@ -40,7 +40,7 @@ format:
 	$(PYTHON) -m ruff format .
 
 test:
-	$(PYTHON) -m pytest
+	$(PYTHON) -m pytest -v
 
 check: lint test
 
@@ -68,3 +68,14 @@ dbt-test:
 
 dbt-build:
 	cd dbt && DBT_PROFILES_DIR=. $(DBT_CMD) build --profiles-dir .
+
+quality-report:
+	$(PYTHON) -m src.quality.data_quality_report
+
+validate:
+	$(PYTHON) -m compileall src dashboard
+	$(MAKE) batch
+	$(MAKE) streaming-demo
+	$(MAKE) dbt-build
+	$(MAKE) test
+	$(MAKE) quality-report

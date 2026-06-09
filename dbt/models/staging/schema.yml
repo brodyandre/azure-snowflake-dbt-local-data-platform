@@ -19,6 +19,8 @@ models:
         description: "UF tratada em uppercase."
       - name: created_at
         description: "Timestamp de criacao do cliente."
+        tests:
+          - not_null
       - name: customer_segment
         description: "Segmento comercial padronizado."
         tests:
@@ -36,10 +38,22 @@ models:
           - unique
       - name: customer_id
         description: "Identificador do cliente associado ao pedido."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
       - name: order_date
         description: "Data do pedido."
+        tests:
+          - not_null
       - name: sales_channel
         description: "Canal comercial tratado."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["ecommerce", "marketplace", "sales_team", "mobile_app"]
       - name: order_status
         description: "Status operacional do pedido."
         tests:
@@ -48,10 +62,16 @@ models:
                 values: ["completed", "canceled", "pending"]
       - name: gross_amount
         description: "Valor bruto do pedido."
+        tests:
+          - not_null
       - name: discount_amount
         description: "Valor de desconto aplicado."
+        tests:
+          - not_null
       - name: net_amount
         description: "Valor liquido calculado como gross_amount - discount_amount."
+        tests:
+          - not_null
 
   - name: stg_payments
     description: "Camada staging de pagamentos lidos da landing local."
@@ -63,8 +83,18 @@ models:
           - unique
       - name: order_id
         description: "Identificador do pedido associado ao pagamento."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
       - name: payment_method
         description: "Metodo de pagamento tratado."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["credit_card", "pix", "boleto", "bank_transfer"]
       - name: payment_status
         description: "Status do pagamento."
         tests:
@@ -73,6 +103,8 @@ models:
                 values: ["paid", "pending", "failed", "refunded"]
       - name: paid_amount
         description: "Valor pago ou esperado para pagamento."
+        tests:
+          - not_null
       - name: paid_at
         description: "Timestamp de pagamento quando disponivel."
 
@@ -86,6 +118,12 @@ models:
           - unique
       - name: customer_id
         description: "Identificador do cliente relacionado ao evento."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
       - name: event_type
         description: "Tipo do evento tratado."
         tests:
@@ -100,6 +138,8 @@ models:
                   - support_contact
       - name: event_timestamp
         description: "Timestamp de ocorrencia do evento."
+        tests:
+          - not_null
       - name: source_system
         description: "Sistema de origem do evento."
         tests:

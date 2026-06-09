@@ -11,8 +11,14 @@ models:
           - unique
       - name: customer_segment
         description: "Segmento comercial do cliente."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["retail", "corporate", "premium", "digital"]
       - name: created_at
         description: "Data e hora de criacao do cadastro."
+        tests:
+          - not_null
 
   - name: fct_orders
     description: "Fato de pedidos com informacoes comerciais e de pagamento enriquecidas."
@@ -30,6 +36,18 @@ models:
               arguments:
                 to: ref('dim_customers')
                 field: customer_id
+      - name: sales_channel
+        description: "Canal de vendas associado ao pedido."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["ecommerce", "marketplace", "sales_team", "mobile_app"]
+      - name: order_status
+        description: "Status operacional do pedido."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["completed", "canceled", "pending"]
       - name: payment_quality_status
         description: "Situacao consolidada do pagamento para cada pedido."
         tests:
@@ -42,6 +60,10 @@ models:
                   - refunded
                   - missing_payment
                   - unknown
+      - name: is_completed_order
+        description: "Indicador booleano para pedidos concluidos."
+        tests:
+          - not_null
 
   - name: mart_customer_360
     description: "Visao analitica por cliente com combinacao de cadastro, pedidos e comportamento digital."
@@ -57,8 +79,16 @@ models:
                 field: customer_id
       - name: total_orders
         description: "Quantidade total de pedidos do cliente."
+        tests:
+          - not_null
       - name: total_net_amount
         description: "Receita liquida acumulada do cliente."
+        tests:
+          - not_null
+      - name: total_events
+        description: "Quantidade total de eventos digitais associados ao cliente."
+        tests:
+          - not_null
       - name: customer_lifecycle_status
         description: "Classificacao de lifecycle criada para analise de relacionamento."
         tests:
