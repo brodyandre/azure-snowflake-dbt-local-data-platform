@@ -47,6 +47,18 @@ O fluxo ELT planejado para a camada analitica local segue o caminho abaixo:
 
 Nessa abordagem, o dbt organiza as transformacoes em camadas e o DuckDB funciona como warehouse analitico local. Em um ambiente cloud, o profile do dbt poderia apontar para Snowflake, preservando os conceitos de modelagem sem afirmar que Snowflake roda localmente.
 
+## Fluxo de modelagem dbt
+
+O fluxo de modelagem analitica implementado no dbt segue a sequencia abaixo:
+
+`landing files`
+-> `staging`
+-> `intermediate`
+-> `marts`
+-> `analytics/dashboard`
+
+Nesse desenho, os arquivos tratados na landing servem como base para a padronizacao inicial, as regras reutilizaveis ficam concentradas na camada intermediate e os datasets finais ficam publicados na camada marts para consumo analitico.
+
 ## Principios arquiteturais
 
 - Evolucao incremental do repositorio.

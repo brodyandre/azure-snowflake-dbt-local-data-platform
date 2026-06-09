@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Dimensao de clientes com atributos cadastrais tratados para consumo analitico."
+    columns:
+      - name: customer_id
+        description: "Chave unica do cliente na dimensao."
+        tests:
+          - not_null
+          - unique
+      - name: customer_segment
+        description: "Segmento comercial do cliente."
+      - name: created_at
+        description: "Data e hora de criacao do cadastro."
+
+  - name: fct_orders
+    description: "Fato de pedidos com informacoes comerciais e de pagamento enriquecidas."
+    columns:
+      - name: order_id
+        description: "Chave unica do pedido na fato."
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Chave do cliente relacionada ao pedido."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: payment_quality_status
+        description: "Situacao consolidada do pagamento para cada pedido."
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - paid
+                  - pending
+                  - failed
+                  - refunded
+                  - missing_payment
+                  - unknown
+
+  - name: mart_customer_360
+    description: "Visao analitica por cliente com combinacao de cadastro, pedidos e comportamento digital."
+    columns:
+      - name: customer_id
+        description: "Identificador do cliente na visao 360."
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: total_orders
+        description: "Quantidade total de pedidos do cliente."
+      - name: total_net_amount
+        description: "Receita liquida acumulada do cliente."
+      - name: customer_lifecycle_status
+        description: "Classificacao de lifecycle criada para analise de relacionamento."
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - high_value
+                  - active
+                  - browsing
+                  - inactive
+                  - review_needed

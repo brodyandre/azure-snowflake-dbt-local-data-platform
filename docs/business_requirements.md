@@ -19,6 +19,16 @@ O projeto busca demonstrar uma plataforma de dados local que possa servir como p
 - Aplicar verificacoes basicas de qualidade de dados.
 - Gerar evidencias para fins de documentacao e auditoria tecnica.
 
+## Perguntas de negocio
+
+Os modelos analiticos da camada `marts` devem responder, de forma simples e reproduzivel, as seguintes perguntas de negocio:
+
+- Qual e a receita liquida por cliente?
+- Quais clientes possuem maior valor acumulado?
+- Quais canais concentram mais pedidos?
+- Quais clientes tem eventos digitais sem compra concluida?
+- Quais pedidos possuem problemas ou pendencias de pagamento?
+
 ## Restricoes
 
 - Nao utilizar servicos pagos.

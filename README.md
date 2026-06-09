@@ -194,6 +194,28 @@ O repositorio inclui `dbt/profiles.yml.example` e tambem um `dbt/profiles.yml` l
 
 O modelo `stg_events` depende da existencia de `data/landing/events/events.jsonl`. Se esse arquivo ainda nao tiver sido gerado, rode `make streaming-demo` antes de `make dbt-build`.
 
+## Modelagem analitica
+
+A camada `marts` concentra os modelos finais voltados para consumo analitico, consultas de negocio e futuras visualizacoes em dashboard. Ela recebe transformacoes padronizadas e reutilizaveis das camadas anteriores para entregar estruturas mais proximas das perguntas de negocio.
+
+As camadas do projeto seguem papeis complementares:
+
+- `staging`: faz padronizacao inicial, limpeza basica e tipagem das fontes vindas da landing.
+- `intermediate`: combina entidades, aplica regras reutilizaveis e prepara agregacoes tecnicas.
+- `marts`: publica dimensoes, fatos e visoes analiticas prontas para consumo.
+
+| Modelo | Camada | Finalidade | Tipo de saida |
+| --- | --- | --- | --- |
+| `stg_customers` | staging | Padronizar dados cadastrais de clientes | view |
+| `stg_orders` | staging | Padronizar pedidos e valores comerciais | view |
+| `stg_payments` | staging | Padronizar pagamentos e seus status | view |
+| `stg_events` | staging | Padronizar eventos digitais consumidos localmente | view |
+| `int_orders_enriched` | intermediate | Enriquecer pedidos com dados de pagamento e sinal de qualidade | view |
+| `int_customer_events` | intermediate | Agregar eventos digitais por cliente | view |
+| `dim_customers` | marts | Disponibilizar a dimensao de clientes tratada | table |
+| `fct_orders` | marts | Disponibilizar a fato de pedidos com contexto de pagamento | table |
+| `mart_customer_360` | marts | Consolidar indicadores de clientes, pedidos e eventos em uma visao 360 | table |
+
 ## Status inicial do projeto
 
 - Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis, pipelines batch e streaming locais e camada ELT com dbt.

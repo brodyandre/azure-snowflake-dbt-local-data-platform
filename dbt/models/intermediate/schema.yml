@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: int_orders_enriched
+    description: "Camada intermediate que enriquece pedidos com informacoes de pagamento e indicadores de qualidade."
+    columns:
+      - name: order_id
+        description: "Identificador unico do pedido herdado da staging."
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Identificador do cliente associado ao pedido."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: payment_quality_status
+        description: "Classificacao simplificada da situacao de pagamento para uso analitico."
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - paid
+                  - pending
+                  - failed
+                  - refunded
+                  - missing_payment
+                  - unknown
+      - name: is_completed_order
+        description: "Indicador booleano de pedido concluido."
+
+  - name: int_customer_events
+    description: "Camada intermediate que agrega eventos digitais por cliente para analise comportamental."
+    columns:
+      - name: customer_id
+        description: "Identificador do cliente agregado na visao de eventos."
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: total_events
+        description: "Quantidade total de eventos do cliente."
+        tests:
+          - not_null
+      - name: last_event_at
+        description: "Timestamp do ultimo evento conhecido para o cliente."
