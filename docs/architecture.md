@@ -59,6 +59,16 @@ O fluxo de modelagem analitica implementado no dbt segue a sequencia abaixo:
 
 Nesse desenho, os arquivos tratados na landing servem como base para a padronizacao inicial, as regras reutilizaveis ficam concentradas na camada intermediate e os datasets finais ficam publicados na camada marts para consumo analitico.
 
+## Camada de consumo analitico
+
+O fluxo de consumo analitico deste laboratorio segue um desenho direto e facil de explicar:
+
+`dbt marts`
+-> `DuckDB local`
+-> `Streamlit dashboard`
+
+Com isso, o projeto mostra nao apenas ingestao e transformacao, mas tambem a etapa final de consumo dos dados curados em uma interface local, sem depender de cloud real.
+
 ## Principios arquiteturais
 
 - Evolucao incremental do repositorio.

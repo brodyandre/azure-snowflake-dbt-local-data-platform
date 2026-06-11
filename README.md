@@ -233,6 +233,42 @@ Estrutura adicionada:
 
 Esses arquivos ajudam a explicar, em entrevista ou revisao tecnica, como o mesmo laboratorio local pode ser traduzido para um alvo mais proximo de Snowflake sem vender a ideia errada de que a nuvem ja esta em uso aqui.
 
+## Dashboard local
+
+O dashboard local existe para fechar o ciclo do laboratorio: depois da ingestao batch, do fluxo streaming e das transformacoes com dbt, os dados curados podem ser consumidos em uma interface analitica simples e executavel no proprio ambiente local.
+
+Modelos consultados pelo painel:
+
+- `mart_customer_360`
+- `fct_orders`
+- `dim_customers`
+- `int_customer_events`
+
+Pre-requisitos:
+
+- ambiente Python preparado com as dependencias do projeto
+- arquivos de landing gerados pelos pipelines locais
+- DuckDB local atualizado via `dbt build`
+
+Comandos:
+
+```bash
+make batch
+make streaming-demo
+make dbt-build
+make dashboard
+```
+
+URL esperada:
+
+- `http://localhost:8501`
+
+Sugestao de evidencia:
+
+- `evidence/screenshots/streamlit-dashboard.png`
+
+O painel deixa claro que consome somente dados locais publicados em `data/warehouse/local_warehouse.duckdb`. Nao ha uso de Azure real, Snowflake real ou qualquer dependencia de ambiente externo para essa camada de consumo.
+
 ## Qualidade de dados
 
 A camada de qualidade de dados deste projeto existe para demonstrar governanca tecnica, integridade de dados e validacao automatizada em um laboratorio local-first.

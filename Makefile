@@ -13,7 +13,7 @@ ifneq ($(wildcard $(VENV_DBT)),)
 DBT_CMD := ../$(VENV_DBT)
 endif
 
-.PHONY: up down logs ps clean install lint format test check batch streaming-producer streaming-consumer streaming-demo dbt-debug dbt-run dbt-test dbt-build quality-report validate
+.PHONY: up down logs ps clean install lint format test check batch streaming-producer streaming-consumer streaming-demo dbt-debug dbt-run dbt-test dbt-build quality-report validate dashboard
 
 up:
 	docker compose up -d
@@ -71,6 +71,9 @@ dbt-build:
 
 quality-report:
 	$(PYTHON) -m src.quality.data_quality_report
+
+dashboard:
+	$(PYTHON) -m streamlit run dashboard/app.py
 
 validate:
 	$(PYTHON) -m compileall src dashboard
