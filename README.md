@@ -4,6 +4,37 @@
 [![CI - dbt Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml)
 [![CI - Documentation Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml)
 
+<a id="indice"></a>
+
+## Indice
+
+- [Visao geral](#visao-geral)
+- [Objetivo do projeto](#objetivo-do-projeto)
+- [Responsabilidades da vaga demonstradas pelo projeto](#responsabilidades-da-vaga)
+- [Arquitetura local](#arquitetura-local)
+- [Tecnologias utilizadas](#tecnologias-utilizadas)
+- [Como este projeto simula Azure + Snowflake localmente](#simulacao-azure-snowflake)
+- [Limitacoes conhecidas](#limitacoes-conhecidas)
+- [Como executar localmente](#como-executar-localmente)
+- [Ambiente Python no WSL2](#ambiente-python-no-wsl2)
+- [Servicos locais com Docker Compose](#servicos-locais)
+- [Fontes de dados simuladas](#fontes-de-dados)
+- [Pipeline batch](#pipeline-batch)
+- [Pipeline streaming](#pipeline-streaming)
+- [Transformacoes com dbt](#transformacoes-com-dbt)
+- [Modelagem analitica](#modelagem-analitica)
+- [Qualidade de dados](#qualidade-de-dados)
+- [SQL e compatibilidade com Snowflake](#sql-e-compatibilidade-com-snowflake)
+- [Dashboard local](#dashboard-local)
+- [CI/CD com GitHub Actions](#ci-cd-com-github-actions)
+- [Governanca de dados](#governanca-de-dados)
+- [Evidencias de execucao](#evidencias-de-execucao)
+- [Troubleshooting](#troubleshooting)
+- [Proximos passos](#proximos-passos)
+- [Autor](#autor)
+
+<a id="visao-geral"></a>
+
 ## Visao geral
 
 Este repositorio e um laboratorio local-first de Engenharia de Dados criado para simular, com ferramentas gratuitas e executaveis localmente, uma arquitetura inspirada em Azure + Snowflake. O projeto cobre ingestao batch, ingestao streaming, transformacoes com dbt, consumo analitico em DuckDB, dashboard com Streamlit, qualidade de dados, SQL analitico e validacoes com GitHub Actions.
@@ -20,6 +51,10 @@ Documentacao complementar:
 - [Troubleshooting](docs/troubleshooting.md)
 - [Status do projeto](docs/project_status.md)
 
+[Voltar ao indice](#indice)
+
+<a id="objetivo-do-projeto"></a>
+
 ## Objetivo do projeto
 
 Construir um ambiente tecnico reproduzivel para demonstrar praticas de Engenharia de Dados local-first com desenho cloud-compatible. Isso inclui:
@@ -31,6 +66,10 @@ Construir um ambiente tecnico reproduzivel para demonstrar praticas de Engenhari
 - consultas SQL e modelos analiticos com foco em negocio
 - testes automatizados, relatorio de qualidade e CI/CD
 - camada simples de consumo com Streamlit
+
+[Voltar ao indice](#indice)
+
+<a id="responsabilidades-da-vaga"></a>
 
 ## Responsabilidades da vaga demonstradas pelo projeto
 
@@ -51,6 +90,10 @@ Construir um ambiente tecnico reproduzivel para demonstrar praticas de Engenhari
 | Dashboard analitico | Consome o DuckDB local em uma interface objetiva para leitura de KPIs e tabelas analiticas | `dashboard/app.py` |
 | POC local | Reune infraestrutura, dados sinteticos, testes, SQL e dashboard em um laboratorio unico e demonstravel | repositorio completo |
 
+[Voltar ao indice](#indice)
+
+<a id="arquitetura-local"></a>
+
 ## Arquitetura local
 
 Fluxo principal do laboratorio:
@@ -70,6 +113,10 @@ Fontes simuladas
 
 Esse desenho ajuda a explicar a separacao entre ingestao, transformacao, consumo e validacao continua, mesmo sem usar Azure real nem Snowflake real nesta fase.
 
+[Voltar ao indice](#indice)
+
+<a id="tecnologias-utilizadas"></a>
+
 ## Tecnologias utilizadas
 
 - Python para pipelines, validacoes e utilitarios
@@ -83,6 +130,10 @@ Esse desenho ajuda a explicar a separacao entre ingestao, transformacao, consumo
 - GitHub Actions para CI/CD
 - Docker Compose para subir servicos locais
 
+[Voltar ao indice](#indice)
+
+<a id="simulacao-azure-snowflake"></a>
+
 ## Como este projeto simula Azure + Snowflake localmente
 
 | Componente local | Equivalente conceitual | Papel no laboratorio |
@@ -93,12 +144,20 @@ Esse desenho ajuda a explicar a separacao entre ingestao, transformacao, consumo
 | dbt + DuckDB | dbt + Snowflake | Representar modelagem em camadas, testes e promocao de modelos |
 | GitHub Actions | GitHub Actions / Azure DevOps | Representar automacao de validacao e esteira CI/CD |
 
+[Voltar ao indice](#indice)
+
+<a id="limitacoes-conhecidas"></a>
+
 ## Limitacoes conhecidas
 
 - O projeto nao executa Azure real nem Snowflake real localmente.
 - O fluxo streaming em CI nao sobe broker; usa preparo de arquivos para manter a validacao simples.
 - O ambiente local nao replica elasticidade, seguranca gerenciada, custo e operacao de uma plataforma cloud real.
 - As evidencias visuais precisam ser capturadas manualmente pelo mantenedor e versionadas quando fizer sentido.
+
+[Voltar ao indice](#indice)
+
+<a id="como-executar-localmente"></a>
 
 ## Como executar localmente
 
@@ -123,6 +182,10 @@ make ci-docs
 make down
 ```
 
+[Voltar ao indice](#indice)
+
+<a id="ambiente-python-no-wsl2"></a>
+
 ## Ambiente Python no WSL2
 
 Em WSL2, o interpretador mais comum e `python3`. O preparo recomendado do ambiente local e:
@@ -136,6 +199,10 @@ python -m compileall src dashboard
 ```
 
 Quando a `.venv` existe, o `Makefile` passa a preferir automaticamente `.venv/bin/python`, o que ajuda a manter o fluxo local consistente.
+
+[Voltar ao indice](#indice)
+
+<a id="servicos-locais"></a>
 
 ## Servicos locais com Docker Compose
 
@@ -156,6 +223,10 @@ make logs
 make down
 ```
 
+[Voltar ao indice](#indice)
+
+<a id="fontes-de-dados"></a>
+
 ## Fontes de dados simuladas
 
 | Fonte | Formato | Papel no laboratorio |
@@ -164,6 +235,10 @@ make down
 | `data/samples/orders.csv` | CSV | Pedidos multicanal e metricas comerciais |
 | `data/samples/payments.json` | JSON | Status de pagamento, falha, pendencia e estorno |
 | `data/samples/events_sample.jsonl` | JSON Lines | Eventos digitais para navegacao, conversao e suporte |
+
+[Voltar ao indice](#indice)
+
+<a id="pipeline-batch"></a>
 
 ## Pipeline batch
 
@@ -197,6 +272,10 @@ Validacoes principais:
 - geracao de `net_amount`
 - auditoria em `evidence/execution-logs/pipeline_audit.jsonl`
 
+[Voltar ao indice](#indice)
+
+<a id="pipeline-streaming"></a>
+
 ## Pipeline streaming
 
 O pipeline streaming demonstra publicacao e consumo de eventos locais com Redpanda, sem dependencia de cloud real.
@@ -212,6 +291,10 @@ make streaming-producer
 make streaming-consumer
 make streaming-demo
 ```
+
+[Voltar ao indice](#indice)
+
+<a id="transformacoes-com-dbt"></a>
 
 ## Transformacoes com dbt
 
@@ -234,6 +317,10 @@ make dbt-build
 
 Observacao importante: os modelos `staging` que leem arquivos da landing foram materializados como `table` para evitar problemas de resolucao de caminhos relativos quando o DuckDB e consultado por ferramentas externas, como o dashboard Streamlit.
 
+[Voltar ao indice](#indice)
+
+<a id="modelagem-analitica"></a>
+
 ## Modelagem analitica
 
 | Modelo | Camada | Tipo | Finalidade |
@@ -247,6 +334,10 @@ Observacao importante: os modelos `staging` que leem arquivos da landing foram m
 | `dim_customers` | marts | table | Publicar dimensao de clientes |
 | `fct_orders` | marts | table | Publicar fato de pedidos |
 | `mart_customer_360` | marts | table | Consolidar relacionamento, receita e engajamento |
+
+[Voltar ao indice](#indice)
+
+<a id="qualidade-de-dados"></a>
 
 ## Qualidade de dados
 
@@ -266,6 +357,10 @@ make test
 make quality-report
 ```
 
+[Voltar ao indice](#indice)
+
+<a id="sql-e-compatibilidade-com-snowflake"></a>
+
 ## SQL e compatibilidade com Snowflake
 
 Os arquivos em `sql/snowflake_compatible/` mostram como a camada analitica atual poderia ser descrita em um ambiente Snowflake, sem afirmar que Snowflake roda localmente.
@@ -283,6 +378,10 @@ Consultas analiticas:
 - `revenue_by_channel.sql`
 - `payment_quality_summary.sql`
 - `customer_engagement_summary.sql`
+
+[Voltar ao indice](#indice)
+
+<a id="dashboard-local"></a>
 
 ## Dashboard local
 
@@ -307,6 +406,10 @@ make dashboard
 URL esperada:
 
 - `http://localhost:8501`
+
+[Voltar ao indice](#indice)
+
+<a id="ci-cd-com-github-actions"></a>
 
 ## CI/CD com GitHub Actions
 
@@ -337,6 +440,10 @@ make ci-dbt
 make ci-docs
 ```
 
+[Voltar ao indice](#indice)
+
+<a id="governanca-de-dados"></a>
+
 ## Governanca de dados
 
 O laboratorio documenta contratos, regras minimas de qualidade, auditoria e rastreabilidade para manter a evolucao tecnica controlada.
@@ -354,6 +461,10 @@ Elementos praticos ja presentes:
 - log de auditoria do pipeline
 - validacao continua com GitHub Actions
 
+[Voltar ao indice](#indice)
+
+<a id="evidencias-de-execucao"></a>
+
 ## Evidencias de execucao
 
 Os caminhos abaixo representam os prints esperados para publicacao no GitHub. Eles nao devem ser tratados como evidencias existentes ate que sejam capturados e versionados manualmente.
@@ -369,6 +480,10 @@ Os caminhos abaixo representam os prints esperados para publicacao no GitHub. El
 | `evidence/screenshots/streamlit-dashboard.png` | `make dashboard` | Mostrar camada de consumo analitico local | A capturar manualmente |
 | `evidence/screenshots/github-actions-success.png` | workflows do GitHub Actions | Mostrar validacoes em CI aprovadas | A capturar manualmente |
 
+[Voltar ao indice](#indice)
+
+<a id="troubleshooting"></a>
+
 ## Troubleshooting
 
 Problemas comuns e solucoes praticas foram organizados em:
@@ -376,6 +491,10 @@ Problemas comuns e solucoes praticas foram organizados em:
 - [docs/troubleshooting.md](docs/troubleshooting.md)
 
 Esse guia cobre desde `python3` no WSL2 ate problemas de `events.jsonl`, Redpanda, Docker, Streamlit e resolucao de caminhos relativos no DuckDB.
+
+[Voltar ao indice](#indice)
+
+<a id="proximos-passos"></a>
 
 ## Proximos passos
 
@@ -385,6 +504,12 @@ Esse guia cobre desde `python3` no WSL2 ate problemas de `events.jsonl`, Redpand
 - incluir cobertura de testes Python
 - explorar uma versao de deploy controlado em ambiente cloud ou local mais proximo de producao
 
+[Voltar ao indice](#indice)
+
+<a id="autor"></a>
+
 ## Autor
 
 - GitHub: [brodyandre](https://github.com/brodyandre)
+
+[Voltar ao indice](#indice)
