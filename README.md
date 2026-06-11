@@ -216,6 +216,23 @@ As camadas do projeto seguem papeis complementares:
 | `fct_orders` | marts | Disponibilizar a fato de pedidos com contexto de pagamento | table |
 | `mart_customer_360` | marts | Consolidar indicadores de clientes, pedidos e eventos em uma visao 360 | table |
 
+## SQL e compatibilidade com Snowflake
+
+Este repositorio nao tenta executar Snowflake localmente. Ainda assim, a pasta `sql` foi organizada para mostrar como a camada analitica atual poderia ser descrita em um ambiente Snowflake sem mudar a logica central do laboratorio.
+
+Estrutura adicionada:
+
+- `sql/snowflake_compatible/create_database.sql`: exemplo simples de criacao do database alvo.
+- `sql/snowflake_compatible/create_schemas.sql`: separacao de schemas para `RAW`, `STAGING`, `INTERMEDIATE`, `MARTS` e `CONTROL`.
+- `sql/snowflake_compatible/create_tables.sql`: tabelas base, tabelas analiticas e log operacional inspirados no fluxo atual.
+- `sql/snowflake_compatible/procedures_examples.sql`: exemplos curtos de procedure para auditoria e refresh de `mart_customer_360`.
+- `sql/analytical_queries/customer_360.sql`: leitura orientada a valor, receita e engajamento por cliente.
+- `sql/analytical_queries/revenue_by_channel.sql`: consolidacao de receita por canal e mes.
+- `sql/analytical_queries/payment_quality_summary.sql`: visao de qualidade e liquidacao de pagamentos.
+- `sql/analytical_queries/customer_engagement_summary.sql`: resumo de engajamento digital por segmento.
+
+Esses arquivos ajudam a explicar, em entrevista ou revisao tecnica, como o mesmo laboratorio local pode ser traduzido para um alvo mais proximo de Snowflake sem vender a ideia errada de que a nuvem ja esta em uso aqui.
+
 ## Qualidade de dados
 
 A camada de qualidade de dados deste projeto existe para demonstrar governanca tecnica, integridade de dados e validacao automatizada em um laboratorio local-first.

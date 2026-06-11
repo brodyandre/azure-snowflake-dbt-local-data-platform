@@ -66,6 +66,12 @@ Nesse desenho, os arquivos tratados na landing servem como base para a padroniza
 - Privilegiar componentes locais simples, reproduziveis e de baixo custo.
 - Documentar decisoes desde o inicio para facilitar migracao futura.
 
+## Compatibilidade conceitual com Snowflake
+
+O laboratorio usa DuckDB para execucao local, mas tenta manter nomenclatura, separacao de camadas e contratos de dados proximos do que seria esperado em uma esteira com Snowflake. Isso reduz retrabalho na migracao futura porque os modelos dbt, as regras de qualidade e as consultas analiticas continuam organizados por responsabilidade, nao por ferramenta.
+
+Os scripts em `sql/snowflake_compatible` nao afirmam que Snowflake roda localmente. Eles existem para mostrar como database, schemas, tabelas de controle, tabelas analiticas e procedures poderiam ser descritos em um ambiente gerenciado, preservando a mesma logica de negocio usada hoje no DuckDB.
+
 ## Observacao importante
 
 Este projeto nao executa Azure nem Snowflake reais. O objetivo e simular conceitos arquiteturais, padroes operacionais e fluxos de desenvolvimento usando alternativas locais.
