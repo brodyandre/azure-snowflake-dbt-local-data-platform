@@ -271,6 +271,41 @@ Sugestao de evidencia:
 
 O painel deixa claro que consome somente dados locais publicados em `data/warehouse/local_warehouse.duckdb`. Nao ha uso de Azure real, Snowflake real ou qualquer dependencia de ambiente externo para essa camada de consumo.
 
+## CI/CD com GitHub Actions
+
+Os workflows deste repositorio existem para validar o laboratorio automaticamente a cada mudanca importante, sem depender de Azure real, Snowflake real, secrets ou servicos externos.
+
+Badges preparados para o repositorio futuro:
+
+[![CI - Python Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml)
+[![CI - dbt Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml)
+[![CI - Documentation Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml)
+
+O que cada workflow valida:
+
+- `CI - Python Validation`: sintaxe Python, pipeline batch, testes automatizados e relatorio de qualidade.
+- `CI - dbt Validation`: preparo minimo dos arquivos de entrada, `dbt debug` e `dbt build` no DuckDB local.
+- `CI - Documentation Validation`: presenca dos arquivos essenciais de documentacao, configuracao e dashboard.
+
+Diferenca entre validacao local e validacao em CI:
+
+- localmente, o laboratorio pode usar `make streaming-demo` com Redpanda para demonstrar o fluxo completo de eventos
+- no GitHub Actions, o CI evita Docker e servicos externos para ficar mais simples, previsivel e barato de executar
+
+Por que o CI usa `prepare-dbt-inputs`:
+
+- o `dbt build` precisa do arquivo `data/landing/events/events.jsonl`
+- em vez de subir Redpanda no workflow, o CI copia `data/samples/events_sample.jsonl` para a landing
+- isso preserva a validacao do dbt sem criar dependencia operacional de broker no runner
+
+Comandos locais equivalentes:
+
+```bash
+make ci-python
+make ci-dbt
+make ci-docs
+```
+
 ## Qualidade de dados
 
 A camada de qualidade de dados deste projeto existe para demonstrar governanca tecnica, integridade de dados e validacao automatizada em um laboratorio local-first.

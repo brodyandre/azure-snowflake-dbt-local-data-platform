@@ -13,7 +13,7 @@ ifneq ($(wildcard $(VENV_DBT)),)
 DBT_CMD := ../$(VENV_DBT)
 endif
 
-.PHONY: up down logs ps clean install lint format test check batch streaming-producer streaming-consumer streaming-demo dbt-debug dbt-run dbt-test dbt-build quality-report validate dashboard
+.PHONY: up down logs ps clean install lint format test check batch streaming-producer streaming-consumer streaming-demo dbt-debug dbt-run dbt-test dbt-build quality-report validate dashboard prepare-dbt-inputs ci-python ci-dbt ci-docs
 
 up:
 	docker compose up -d
@@ -74,6 +74,34 @@ quality-report:
 
 dashboard:
 	$(PYTHON) -m streamlit run dashboard/app.py
+
+prepare-dbt-inputs:
+	mkdir -p data/landing/events
+	cp data/samples/events_sample.jsonl data/landing/events/events.jsonl
+
+ci-python:
+	$(PYTHON) -m compileall src dashboard
+	$(MAKE) batch
+	$(MAKE) test
+	$(MAKE) quality-report
+
+ci-dbt:
+	$(MAKE) batch
+	$(MAKE) prepare-dbt-inputs
+	$(MAKE) dbt-debug
+	$(MAKE) dbt-build
+
+ci-docs:
+	test -f README.md
+	test -f docs/architecture.md
+	test -f docs/business_requirements.md
+	test -f docs/data_contracts.md
+	test -f docs/data_governance.md
+	test -f docs/migration_to_azure_snowflake.md
+	test -f docker-compose.yml
+	test -f Makefile
+	test -f dbt/dbt_project.yml
+	test -f dashboard/app.py
 
 validate:
 	$(PYTHON) -m compileall src dashboard

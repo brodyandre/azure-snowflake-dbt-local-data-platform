@@ -71,6 +71,12 @@ O fluxo de consumo analitico deste laboratorio segue um desenho direto e facil d
 
 Com isso, o projeto mostra nao apenas ingestao e transformacao, mas tambem a etapa final de consumo dos dados curados em uma interface local, sem depender de cloud real.
 
+## Automacao e validacao continua
+
+O repositorio usa GitHub Actions para validar sintaxe Python, testes, `dbt build` e a presenca da documentacao principal. Essa automacao roda sem Azure real, Snowflake real, secrets ou servicos externos obrigatorios no runner.
+
+Para manter o CI simples e estavel, a validacao do dbt nao sobe Redpanda nem Docker. Em vez disso, prepara os arquivos minimos da landing para que o DuckDB e o dbt consigam validar a camada analitica de forma reproduzivel. Isso reforca uma pratica de DevOps aplicada a Engenharia de Dados: automatizar verificacoes importantes sem tornar a esteira mais fragil do que o necessario.
+
 ## Principios arquiteturais
 
 - Evolucao incremental do repositorio.
