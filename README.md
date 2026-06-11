@@ -194,6 +194,8 @@ O repositorio inclui `dbt/profiles.yml.example` e tambem um `dbt/profiles.yml` l
 
 O modelo `stg_events` depende da existencia de `data/landing/events/events.jsonl`. Se esse arquivo ainda nao tiver sido gerado, rode `make streaming-demo` antes de `make dbt-build`.
 
+Observacao: os modelos `staging` que leem arquivos locais da landing podem ser materializados como `table` para evitar problemas de resolucao de caminhos relativos quando o DuckDB e consultado por ferramentas externas, como o Streamlit.
+
 ## Modelagem analitica
 
 A camada `marts` concentra os modelos finais voltados para consumo analitico, consultas de negocio e futuras visualizacoes em dashboard. Ela recebe transformacoes padronizadas e reutilizaveis das camadas anteriores para entregar estruturas mais proximas das perguntas de negocio.

@@ -40,12 +40,12 @@ Esse fluxo permite demonstrar publicacao e consumo de eventos em ambiente local,
 O fluxo ELT planejado para a camada analitica local segue o caminho abaixo:
 
 `data/landing`
--> `dbt staging`
+-> `dbt staging tables`
 -> `dbt intermediate`
 -> `dbt marts`
 -> `data/warehouse/local_warehouse.duckdb`
 
-Nessa abordagem, o dbt organiza as transformacoes em camadas e o DuckDB funciona como warehouse analitico local. Em um ambiente cloud, o profile do dbt poderia apontar para Snowflake, preservando os conceitos de modelagem sem afirmar que Snowflake roda localmente.
+Nessa abordagem, o dbt organiza as transformacoes em camadas e o DuckDB funciona como warehouse analitico local. A materializacao da `staging` como `table` ajuda a desacoplar o consumo analitico dos caminhos relativos usados pelas fontes locais. Em um ambiente cloud, o profile do dbt poderia apontar para Snowflake, preservando os conceitos de modelagem sem afirmar que Snowflake roda localmente.
 
 ## Fluxo de modelagem dbt
 
@@ -63,7 +63,9 @@ Nesse desenho, os arquivos tratados na landing servem como base para a padroniza
 
 O fluxo de consumo analitico deste laboratorio segue um desenho direto e facil de explicar:
 
-`dbt marts`
+`landing files`
+-> `dbt staging tables`
+-> `dbt intermediate e marts`
 -> `DuckDB local`
 -> `Streamlit dashboard`
 

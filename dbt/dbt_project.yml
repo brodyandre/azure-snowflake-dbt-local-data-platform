@@ -11,7 +11,7 @@ macro-paths: ["macros"]
 models:
   azure_snowflake_dbt_local_data_platform:
     staging:
-      +materialized: view
+      +materialized: table
     intermediate:
       +materialized: view
     marts:
