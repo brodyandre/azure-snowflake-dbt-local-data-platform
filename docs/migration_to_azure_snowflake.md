@@ -2,153 +2,141 @@
 
 ## Objetivo
 
-Registrar como este laboratorio local pode evoluir para uma arquitetura real em Azure + Snowflake sem perder a disciplina de modelagem, testes, automacao, rastreabilidade e governanca ja praticada no repositorio.
+Explicar como o laboratorio local-first pode evoluir para uma arquitetura Azure + Snowflake real sem perder a disciplina de modelagem, testes, automacao, observabilidade e governanca que ja existe no repositorio.
 
 ## Principio orientador
 
-O mapeamento deste documento e conceitual. O laboratorio nao tenta afirmar que os componentes locais sao equivalentes completos aos servicos cloud. A proposta e mostrar uma trilha plausivel de evolucao, mantendo o desenho tecnico portavel.
+Este mapeamento e conceitual. O projeto nao executa Azure real nem Snowflake real localmente. Os componentes locais existem para demonstrar arquitetura, organizacao e empregabilidade tecnica de forma reproduzivel.
 
 ## Mapeamento principal
 
 | Laboratorio local | Destino futuro | Papel arquitetural |
 | --- | --- | --- |
-| DuckDB | Snowflake | Camada analitica, transformacoes e datasets finais |
-| Azurite | Azure Blob Storage ou ADLS Gen2 | Landing zone, artefatos de carga e armazenamento de arquivos |
-| Redpanda | Azure Event Hubs | Publicacao e consumo de eventos |
-| GitHub Actions local-first | GitHub Actions e/ou Azure DevOps | Validacao, automacao e promocao entre ambientes |
-| dbt local com DuckDB | dbt com Snowflake | Modelagem, testes, documentacao e governanca de transformacoes |
+| DuckDB | Snowflake | Warehouse analitico, datasets curados e consumo SQL |
+| Azurite | Azure Blob Storage ou ADLS Gen2 | Landing zone, arquivos de carga e artefatos operacionais |
+| Redpanda | Azure Event Hubs | Publicacao, persistencia e consumo de eventos |
+| dbt local com DuckDB | dbt com Snowflake | Camada ELT, testes, documentacao e governanca analitica |
+| GitHub Actions local-first | GitHub Actions e/ou Azure DevOps | Validacao, CI/CD e promocao entre ambientes |
 
-## DuckDB para Snowflake
+## DuckDB local para Snowflake
 
-O DuckDB foi escolhido por simplicidade operacional. Ele permite validar:
+O DuckDB foi escolhido porque permite validar rapidamente:
 
 - modelagem em camadas
-- SQL analitico
+- consultas SQL analiticas
 - testes dbt
 - consumo local por dashboard
 
-Na migracao para Snowflake, a maior mudanca estaria em:
+Em uma migracao real, o DuckDB deixaria de ser o warehouse local e seria substituido por Snowflake. A maior mudanca estaria em:
 
-- profile do dbt
-- configuracao de databases, schemas e warehouses
-- estrategia de materializacao
-- controle de custo e concorrencia
+- configuracao do profile do dbt
+- definicao de database, schemas e warehouses
+- estrategia de materializacao por ambiente
+- observabilidade de custos, concorrencia e performance
 
-O que tende a permanecer:
+Elementos que tendem a permanecer:
 
-- nomes de modelos
+- nomes de modelos e convencoes
 - contratos analiticos
 - logica de negocio
 - estrutura `staging` -> `intermediate` -> `marts`
 
-## Azurite para Azure Blob Storage ou ADLS
+## Azurite local para Azure Blob Storage ou ADLS
 
-No laboratorio, a camada `landing` e local. Em Azure real, esse papel seria absorvido por Blob Storage ou ADLS Gen2.
+Hoje o laboratorio usa caminhos locais e Azurite para simular uma camada de aterrissagem. Em Azure real, esse papel seria absorvido por Blob Storage ou ADLS Gen2.
 
-Pontos de evolucao:
+Mudancas esperadas:
 
-- containers por zona de dados
-- convencoes de paths por dominio e data
-- retention policy
+- containers ou file systems por zona de dados
+- convencoes de paths por dominio, data e ambiente
+- retention policy e lifecycle management
 - separacao entre `raw`, `landing`, `curated` e `artifacts`
 - logs operacionais centralizados
 
-## Redpanda para Azure Event Hubs
+## Redpanda local para Azure Event Hubs
 
-O papel do Redpanda no laboratorio e demonstrar integracao e persistencia de eventos. Em um ambiente corporativo, isso pode migrar para Azure Event Hubs ou outra infraestrutura gerenciada de mensageria.
+O Redpanda demonstra padroes de streaming inspirados em Event Hubs, mas em ambiente local. Em uma arquitetura real, o destino natural seria Azure Event Hubs.
 
-O que continua relevante:
+Aspectos que continuariam relevantes:
 
 - padrao do evento
 - separacao entre produtor e consumidor
 - persistencia em camada de aterrissagem
-- preocupacao com idempotencia, offset e observabilidade
-
-## GitHub Actions para GitHub Actions ou Azure DevOps
-
-O projeto ja usa GitHub Actions para validar Python, dbt e documentacao. Em um ambiente corporativo, isso pode continuar em GitHub Actions ou ser promovido para Azure DevOps, dependendo do padrao da empresa.
-
-Evolucoes naturais:
-
-- aprovacao por ambiente
-- promocoes entre `dev`, `staging` e `prod`
-- artifacts de build e manifestos
-- gates de qualidade mais fortes
-- integracao com secrets manager
+- idempotencia, offsets e observabilidade
+- estrategia de reprocessamento
 
 ## dbt local para dbt com Snowflake
 
-O dbt ja organiza a plataforma em camadas reutilizaveis. Em uma migracao real:
+O dbt ja organiza o fluxo em camadas reutilizaveis. Na migracao para Snowflake:
 
-- o adapter mudaria para `dbt-snowflake`
+- o adapter passaria para `dbt-snowflake`
 - o profile deixaria de apontar para o DuckDB local
-- tabelas externas, stages e cargas controladas poderiam substituir parte da leitura direta dos arquivos
+- `sources`, `vars` e `target` seriam diferenciados por ambiente
+- materializacoes poderiam variar entre `view`, `table`, `incremental` e `dynamic tables`, se adotadas
 
 O valor da abordagem atual e que a disciplina de modelagem ja esta pronta antes da troca de engine.
 
-## Cuidados com RBAC
+## Variaveis, profiles e seguranca
 
-Em Snowflake, a governanca de acesso precisa ser tratada com mais rigor. Alguns cuidados importantes:
-
-- separar roles por responsabilidade
-- evitar uso excessivo de ownership compartilhado
-- definir roles para carga, transformacao e consumo
-- limitar privilegios ao minimo necessario
-
-Exemplos de papeis:
-
-- `loader`
-- `transformer`
-- `analyst`
-- `read_only`
-
-## Cuidados com secrets
-
-O laboratorio atual nao usa segredos reais. Em ambiente cloud, isso precisa mudar de forma controlada:
+O laboratorio atual nao usa segredos reais. Em ambiente cloud, a seguranca precisa ser tratada explicitamente:
 
 - nunca versionar credenciais no repositorio
-- usar `env vars`, GitHub Secrets, Azure Key Vault ou solucao equivalente
-- separar credenciais por ambiente
-- evitar compartilhamento de usuario tecnico entre multiplos fluxos
+- usar variaveis de ambiente, GitHub Secrets, Azure Key Vault ou solucao equivalente
+- manter `profiles.yml` com referencias parametrizadas, e nao com segredos fixos
+- separar credenciais por ambiente e por responsabilidade tecnica
 
-## Cuidados com custos
+## CI/CD para dbt e SQL
 
-Ao migrar para Snowflake e Azure, custo vira parte da arquitetura. Alguns cuidados esperados:
+Hoje o projeto valida Python, dbt e documentacao em GitHub Actions. Em um ambiente Azure + Snowflake, a mesma esteira poderia evoluir para:
 
-- limitar processamento ocioso
-- revisar frequencia de jobs
-- definir materializacoes compativeis com volume real
-- evitar warehouse superdimensionado
+- validacao de `dbt debug`, `dbt build` e testes por ambiente
+- checagem de sintaxe SQL conceitual e de scripts promocionais
+- execucao controlada de objetos como schemas, grants e tasks
+- promocao entre `dev`, `staging` e `prod` com gates de aprovacao
 
-## Cuidados com warehouses
+GitHub Actions pode continuar sendo usado, ou a esteira pode migrar para Azure DevOps caso o contexto corporativo peca isso.
 
-Snowflake traz elasticidade, mas tambem exige criterio operacional. Boas praticas comuns:
+## Cuidados com custos, warehouses e RBAC
 
-- warehouses separados por finalidade
-- `auto-suspend` e `auto-resume`
+Ao migrar para Snowflake e Azure, custo e acesso deixam de ser detalhes e passam a fazer parte da arquitetura.
+
+Pontos importantes:
+
+- warehouses separados por finalidade, como transformacao e analytics
+- `auto-suspend` e `auto-resume` para reduzir custo ocioso
 - isolamento entre cargas pesadas e consumo analitico
-- observacao de concorrencia e tempo de execucao
+- controle de concorrencia e observacao de tempo de execucao
+- roles separadas para carga, transformacao, analise e governanca
+- principio do menor privilegio
 
-## Cuidados com governanca
+Exemplos conceituais de roles:
 
-A governanca local deste laboratorio pode migrar para um desenho mais robusto com:
+- `role_loader`
+- `role_transformer`
+- `role_analyst`
+- `role_governance`
+- `role_read_only`
 
-- catalogo de dados
+## Governanca e rastreabilidade
+
+Em Snowflake, a governanca pode evoluir a partir do que o laboratorio ja demonstra localmente:
+
+- catalogo de dados e linhagem
 - classificacao de dados sensiveis
-- mascaramento
-- linhagem
+- mascaramento e politicas de acesso
 - auditoria centralizada
 - politicas de retencao
+- resultados de qualidade de dados armazenados em camada dedicada
 
 ## Caminho sugerido de evolucao
 
-1. Migrar a landing para Blob Storage ou ADLS.
-2. Configurar profile dbt para Snowflake.
-3. Criar schemas por camada analitica.
-4. Adaptar automacao para ambientes promoviveis.
-5. Introduzir secrets e RBAC de forma segura.
-6. Ajustar materializacoes e warehouses conforme custo e volume.
+1. Migrar a landing para Azure Blob Storage ou ADLS.
+2. Configurar warehouses e schemas em Snowflake.
+3. Ajustar o `profiles.yml` do dbt para Snowflake com secrets externos.
+4. Promover testes e `dbt build` para CI/CD por ambiente.
+5. Definir RBAC, roles e grants por responsabilidade.
+6. Monitorar custo, concorrencia e governanca operacional.
 
 ## Observacao final
 
-O valor deste laboratorio nao esta em fingir que a migracao ja aconteceu. O valor esta em mostrar um repositorio organizado o bastante para que essa migracao futura seja possivel com menos improviso e mais previsibilidade.
+O objetivo deste laboratorio nao e fingir que a migracao ja aconteceu. O objetivo e mostrar um repositorio organizado o bastante para tornar essa migracao futura plausivel, tecnica e explicavel.

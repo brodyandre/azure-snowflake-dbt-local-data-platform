@@ -1,16 +1,24 @@
--- Visao de qualidade de pagamentos para apoiar acompanhamento operacional e financeiro.
+-- Objetivo:
+-- Consolidar status de pagamento, quantidade de pedidos, valor pago e
+-- indicadores de pendencia operacional.
+
+with payment_summary as (
+    select
+        payment_quality_status,
+        count(*) as total_orders,
+        sum(paid_amount) as total_paid_amount,
+        sum(case when payment_quality_status in ('pending', 'failed', 'missing_payment') then 1 else 0 end)
+            as pending_or_problem_orders,
+        sum(case when payment_quality_status = 'pending' then paid_amount else 0 end) as pending_amount
+    from MARTS.FCT_ORDERS
+    group by payment_quality_status
+)
 
 select
     payment_quality_status,
-    payment_method,
-    count(*) as total_transactions,
-    sum(net_amount) as total_net_amount,
-    sum(case when payment_quality_status = 'paid' then paid_amount else 0 end) as settled_amount,
-    count_if(payment_quality_status = 'paid') as paid_transactions,
-    round(
-        100 * count_if(payment_quality_status = 'paid') / nullif(count(*), 0),
-        2
-    ) as settlement_rate_pct
-from MARTS.FCT_ORDERS
-group by 1, 2
-order by total_transactions desc, settlement_rate_pct desc;
+    total_orders,
+    total_paid_amount,
+    pending_or_problem_orders,
+    pending_amount
+from payment_summary
+order by total_orders desc, total_paid_amount desc;

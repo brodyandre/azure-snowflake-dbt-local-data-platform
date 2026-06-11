@@ -86,6 +86,13 @@ Fluxo principal:
 
 O DuckDB funciona como warehouse analitico local e permite validar SQL, testes dbt e consumo do dashboard sem infraestrutura adicional.
 
+## Compatibilidade conceitual com Snowflake
+
+- DuckDB cumpre o papel de warehouse local para desenvolvimento e demonstracao.
+- Snowflake e tratado como um possivel destino cloud para a camada analitica.
+- dbt funciona como camada de portabilidade parcial entre o ambiente local e um alvo futuro em Snowflake.
+- Os arquivos em `sql/snowflake_compatible/` servem como documentacao tecnica de migracao e demonstracao de conhecimento.
+
 ## Staging como table para estabilidade de consumo
 
 Os modelos `staging` que leem diretamente a camada `landing` foram materializados como `table`. Essa decisao foi importante para estabilizar o consumo do DuckDB por ferramentas externas, como o Streamlit.

@@ -363,7 +363,22 @@ make quality-report
 
 ## SQL e compatibilidade com Snowflake
 
-Os arquivos em `sql/snowflake_compatible/` mostram como a camada analitica atual poderia ser descrita em um ambiente Snowflake, sem afirmar que Snowflake roda localmente.
+A pasta `sql/` concentra dois tipos de artefato:
+
+- consultas analiticas voltadas ao consumo e exploracao do modelo de negocio
+- scripts conceituais de migracao para um ambiente Snowflake real
+
+O projeto nao executa Snowflake localmente. O warehouse local continua sendo o DuckDB. Por isso, os arquivos em `sql/snowflake_compatible/` existem como referencia de arquitetura, demonstracao de conhecimento e apoio a uma futura migracao, sem afirmar que Snowflake roda neste laboratorio.
+
+Finalidade das subpastas:
+
+- `sql/snowflake_compatible/`: DDLs, schemas, tabelas e exemplos operacionais em sintaxe proxima de Snowflake
+- `sql/analytical_queries/`: consultas legiveis para responder perguntas de negocio sobre clientes, canais, pagamentos e engajamento
+
+Diferenca entre os dois grupos:
+
+- os scripts conceituais de Snowflake documentam como o ambiente cloud poderia ser estruturado
+- as consultas analiticas refletem o consumo do modelo atual e podem servir como referencia para leitura no DuckDB ou em um futuro alvo Snowflake
 
 Arquivos principais:
 
