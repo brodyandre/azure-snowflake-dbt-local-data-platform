@@ -1,185 +1,227 @@
 # azure-snowflake-dbt-local-data-platform
 
-## Objetivo
-
-Construir um laboratorio local de Engenharia de Dados para demonstrar, de forma profissional e evolutiva, padroes inspirados em uma arquitetura Azure + Snowflake usando somente ferramentas gratuitas e executadas localmente.
+[![CI - Python Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml)
+[![CI - dbt Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml)
+[![CI - Documentation Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml)
 
 ## Visao geral
 
-Este repositorio servira como ambiente pratico para estudar e demonstrar ingestao batch, streaming, modelagem analitica com dbt, qualidade de dados, governanca, consultas SQL, automacao CI/CD e documentacao tecnica.
+Este repositorio e um laboratorio local-first de Engenharia de Dados criado para simular, com ferramentas gratuitas e executaveis localmente, uma arquitetura inspirada em Azure + Snowflake. O projeto cobre ingestao batch, ingestao streaming, transformacoes com dbt, consumo analitico em DuckDB, dashboard com Streamlit, qualidade de dados, SQL analitico e validacoes com GitHub Actions.
 
-Nesta fase atual, o projeto ja conta com a base estrutural do repositorio, servicos locais via Docker Compose e fontes sinteticas pequenas para apoiar as proximas etapas de pipeline, modelagem e validacao.
+O foco nao e reproduzir a nuvem produto a produto. O foco e demonstrar organizacao tecnica, boas praticas de engenharia, clareza de arquitetura e disciplina de validacao em um ambiente simples de subir no WSL2.
 
-## Tecnologias planejadas
+Documentacao complementar:
 
-- Python para orquestracao, ingestao e utilitarios.
-- DuckDB como warehouse analitico local para simular conceitos de armazenamento e processamento inspirados no Snowflake.
-- dbt para transformacao, testes e organizacao das camadas analiticas.
-- Azurite para simular conceitos de Azure Blob Storage em ambiente local.
-- Redpanda ou Apache Kafka para demonstrar padroes de streaming inspirados em Azure Event Hubs.
-- SQL para modelagem analitica e consultas exploratorias.
-- GitHub Actions para CI/CD local ao repositorio.
-- Documentacao em Markdown para registrar requisitos, arquitetura e governanca.
+- [Arquitetura](docs/architecture.md)
+- [Requisitos de negocio](docs/business_requirements.md)
+- [Contratos de dados](docs/data_contracts.md)
+- [Governanca de dados](docs/data_governance.md)
+- [Migracao para Azure + Snowflake](docs/migration_to_azure_snowflake.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Status do projeto](docs/project_status.md)
 
-## Servicos locais
+## Objetivo do projeto
 
-Os servicos abaixo sao executados com Docker Compose para manter o laboratorio local-first, simples de subir e compativel com uma futura migracao para cloud.
+Construir um ambiente tecnico reproduzivel para demonstrar praticas de Engenharia de Dados local-first com desenho cloud-compatible. Isso inclui:
 
-| Servico | Funcao no projeto | Porta local | Tecnologia cloud simulada |
-| --- | --- | --- | --- |
-| Azurite | Simula armazenamento de objetos e zonas de aterrissagem para ingestao de dados | `10000`, `10001`, `10002` | Azure Blob Storage |
-| Redpanda | Broker Kafka-compatible para eventos, streaming e integracao entre produtores e consumidores | `9092`, `29092`, `9644` | Padrao de streaming inspirado em Azure Event Hubs / Kafka |
-| Redpanda Console | Interface web local para visualizar topicos, mensagens e estado operacional do broker | `8080` | Console local de observacao para streaming |
+- ingestao e preparo de dados por pipelines Python
+- simulacao de eventos em streaming
+- organizacao da camada analitica com dbt
+- uso do DuckDB como warehouse local
+- consultas SQL e modelos analiticos com foco em negocio
+- testes automatizados, relatorio de qualidade e CI/CD
+- camada simples de consumo com Streamlit
 
-Comandos operacionais:
+## Responsabilidades da vaga demonstradas pelo projeto
+
+| Requisito da vaga | Como o projeto demonstra | Arquivos ou componentes relacionados |
+| --- | --- | --- |
+| Engenharia de dados em ambiente cloud | Simula desenho de dados inspirado em Azure + Snowflake, mas com execucao local e sem credenciais reais | `docs/architecture.md`, `docs/migration_to_azure_snowflake.md`, `docker-compose.yml` |
+| Pipelines batch | Processa fontes CSV e JSON, valida colunas obrigatorias e publica parquet na landing | `src/batch/`, `Makefile`, `data/samples/` |
+| Pipelines streaming | Publica e consome eventos sinteticos para demonstrar ingestao orientada a eventos | `src/streaming/`, `make streaming-demo`, `data/landing/events/events.jsonl` |
+| ETL/ELT | Separa ingestao Python da transformacao analitica com dbt sobre DuckDB | `src/batch/`, `dbt/models/`, `data/warehouse/local_warehouse.duckdb` |
+| Azure-inspired architecture | Usa Azurite, Redpanda, DuckDB e dbt para representar conceitos equivalentes de storage, streaming e analytics | `docker-compose.yml`, `docs/architecture.md` |
+| Snowflake-compatible SQL | Mantem exemplos de DDL, schemas, procedures e queries analiticas em sintaxe orientada a Snowflake | `sql/snowflake_compatible/`, `sql/analytical_queries/` |
+| dbt | Organiza a camada analitica em `staging`, `intermediate` e `marts`, com testes e materializacoes controladas | `dbt/dbt_project.yml`, `dbt/models/` |
+| Qualidade de dados | Usa testes dbt, testes Python e relatorio operacional consolidado | `tests/`, `dbt/models/*/schema.yml`, `src/quality/data_quality_report.py` |
+| Governanca | Documenta contratos, rastreabilidade, auditoria e controles locais de evolucao | `docs/data_contracts.md`, `docs/data_governance.md`, `evidence/execution-logs/` |
+| SQL analitico | Responde perguntas de receita, segmentacao, pagamento e customer 360 | `sql/analytical_queries/`, `dbt/models/marts/` |
+| CI/CD | Valida Python, dbt e documentacao com workflows simples e reproduziveis | `.github/workflows/`, `Makefile` |
+| DevOps | Padroniza comandos locais, automacao e validacoes sem depender de cloud real | `Makefile`, `.github/workflows/`, `docs/troubleshooting.md` |
+| Dashboard analitico | Consome o DuckDB local em uma interface objetiva para leitura de KPIs e tabelas analiticas | `dashboard/app.py` |
+| POC local | Reune infraestrutura, dados sinteticos, testes, SQL e dashboard em um laboratorio unico e demonstravel | repositorio completo |
+
+## Arquitetura local
+
+Fluxo principal do laboratorio:
+
+```text
+Fontes simuladas
+→ data/samples
+→ pipelines Python
+→ data/landing
+→ dbt staging tables
+→ dbt intermediate
+→ dbt marts
+→ DuckDB local
+→ Streamlit dashboard
+→ GitHub Actions
+```
+
+Esse desenho ajuda a explicar a separacao entre ingestao, transformacao, consumo e validacao continua, mesmo sem usar Azure real nem Snowflake real nesta fase.
+
+## Tecnologias utilizadas
+
+- Python para pipelines, validacoes e utilitarios
+- DuckDB como warehouse analitico local
+- dbt Core com adapter DuckDB para modelagem e testes
+- Streamlit para camada de consumo analitico local
+- Redpanda para demonstracao de fluxo streaming local
+- Azurite para simular padroes de object storage
+- SQL para modelagem, analise e compatibilidade conceitual com Snowflake
+- pytest para testes Python
+- GitHub Actions para CI/CD
+- Docker Compose para subir servicos locais
+
+## Como este projeto simula Azure + Snowflake localmente
+
+| Componente local | Equivalente conceitual | Papel no laboratorio |
+| --- | --- | --- |
+| Azurite | Azure Blob Storage / ADLS Gen2 | Representar landing zone e armazenamento de artefatos |
+| Redpanda | Azure Event Hubs / Kafka | Representar publicacao e consumo de eventos |
+| DuckDB | Snowflake | Representar a camada analitica local |
+| dbt + DuckDB | dbt + Snowflake | Representar modelagem em camadas, testes e promocao de modelos |
+| GitHub Actions | GitHub Actions / Azure DevOps | Representar automacao de validacao e esteira CI/CD |
+
+## Limitacoes conhecidas
+
+- O projeto nao executa Azure real nem Snowflake real localmente.
+- O fluxo streaming em CI nao sobe broker; usa preparo de arquivos para manter a validacao simples.
+- O ambiente local nao replica elasticidade, seguranca gerenciada, custo e operacao de uma plataforma cloud real.
+- As evidencias visuais precisam ser capturadas manualmente pelo mantenedor e versionadas quando fizer sentido.
+
+## Como executar localmente
+
+Fluxo recomendado para demonstracao completa:
 
 ```bash
 make up
-make down
-make logs
-make ps
-docker compose ps
+make batch
+make streaming-demo
+make dbt-build
+make test
+make quality-report
+make dashboard
 ```
 
-## Fontes de dados simuladas
+Outros comandos uteis:
 
-As fontes abaixo sao sinteticas, pequenas e consistentes entre si. Elas existem para apoiar testes de pipeline, modelagem, SQL, qualidade de dados e cenarios de streaming, sem depender de dados reais.
-
-| Fonte | Formato | Sistema simulado | Finalidade no projeto |
-| --- | --- | --- | --- |
-| `customers.csv` | CSV | CRM / cadastro mestre de clientes | Base de referencia para relacionamento de entidades e segmentacao |
-| `orders.csv` | CSV | Plataforma de vendas multicanal | Simular pedidos, status comerciais e metricas de receita |
-| `payments.json` | JSON | Gateway de pagamentos | Simular liquidacao, falha, pendencia e estorno de pagamentos |
-| `events_sample.jsonl` | JSON Lines | Telemetria digital e canais de atendimento | Simular navegacao, conversao e sinais comportamentais para analytics |
-
-## Padroes de codigo Python
-
-Os utilitarios Python deste projeto seguem algumas convencoes simples para manter o laboratorio legivel, testavel e facil de evoluir.
-
-- `pathlib` e usado para construir caminhos de forma portavel e evitar caminhos absolutos fixos.
-- Logs estruturados com `logging` padrao ajudam na observabilidade local sem espalhar `print` pelos modulos.
-- Funcoes reutilizaveis concentram leituras, escritas, configuracao e auditoria para reduzir duplicacao.
-- A separacao entre `config`, `io`, `logger` e `audit` facilita manutencao, testes e extensao incremental.
-- O foco e manter codigo simples, local-first, cloud-compatible e facil de entender por outras pessoas do time.
+```bash
+make ci-python
+make ci-dbt
+make ci-docs
+make down
+```
 
 ## Ambiente Python no WSL2
 
-Em ambientes WSL2 com Ubuntu, o interpretador disponivel por padrao pode ser `python3`. O fluxo recomendado para preparar o ambiente local e:
+Em WSL2, o interpretador mais comum e `python3`. O preparo recomendado do ambiente local e:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-python -m compileall src
+python -m compileall src dashboard
 ```
 
-O `Makefile` tambem usa a variavel `PYTHON` com valor padrao `python3`, o que ajuda a manter os comandos portaveis nesse contexto.
+Quando a `.venv` existe, o `Makefile` passa a preferir automaticamente `.venv/bin/python`, o que ajuda a manter o fluxo local consistente.
 
-Quando a `.venv` existe, o `Makefile` passa a preferir automaticamente `.venv/bin/python`, o que simplifica a execucao dos targets locais sem depender do Python global do sistema.
+## Servicos locais com Docker Compose
+
+Os servicos locais suportam a demonstracao de armazenamento, streaming e observabilidade operacional.
+
+| Servico | Funcao | Portas |
+| --- | --- | --- |
+| Azurite | Simula object storage e landing zone | `10000`, `10001`, `10002` |
+| Redpanda | Broker Kafka-compatible para eventos | `9092`, `29092`, `9644` |
+| Redpanda Console | Inspecao visual do broker e topicos | `8080` |
+
+Comandos:
+
+```bash
+make up
+make ps
+make logs
+make down
+```
+
+## Fontes de dados simuladas
+
+| Fonte | Formato | Papel no laboratorio |
+| --- | --- | --- |
+| `data/samples/customers.csv` | CSV | Cadastro sintetico de clientes |
+| `data/samples/orders.csv` | CSV | Pedidos multicanal e metricas comerciais |
+| `data/samples/payments.json` | JSON | Status de pagamento, falha, pendencia e estorno |
+| `data/samples/events_sample.jsonl` | JSON Lines | Eventos digitais para navegacao, conversao e suporte |
 
 ## Pipeline batch
 
-O pipeline batch local tem como objetivo ler os arquivos sinteticos em `data/samples`, aplicar validacoes minimas e gravar uma versao tratada em `data/landing` no formato Parquet.
+O pipeline batch le as fontes estruturadas, aplica validacoes minimas e grava a camada `landing` em parquet.
 
-Arquivos de origem:
+Entradas:
 
-- `data/samples/customers.csv`
-- `data/samples/orders.csv`
-- `data/samples/payments.json`
+- `customers.csv`
+- `orders.csv`
+- `payments.json`
 
-Arquivos de destino:
+Saidas:
 
 - `data/landing/customers/customers.parquet`
 - `data/landing/orders/orders.parquet`
 - `data/landing/payments/payments.parquet`
 
-Validacoes realizadas:
-
-- Presenca das colunas obrigatorias em cada fonte.
-- Validacao de identificadores obrigatorios sem nulos ou valores vazios.
-- Conversao de campos de data para datetime.
-- Conversao de valores monetarios para tipo numerico.
-- Remocao de espacos extras em campos textuais relevantes.
-- Criacao da coluna `net_amount` na ingestao de pedidos.
-- Registro de auditoria em caso de sucesso e falha.
-
-Comando para executar:
+Comando:
 
 ```bash
 make batch
 ```
 
-Saida esperada:
+Validacoes principais:
 
-- Logs claros indicando inicio e fim de cada etapa.
-- Arquivos Parquet gerados em `data/landing`.
-- Registro de auditoria por pipeline executado.
-- Codigo de saida diferente de zero se alguma etapa falhar.
-
-Localizacao dos arquivos gerados:
-
-- `data/landing/customers/customers.parquet`
-- `data/landing/orders/orders.parquet`
-- `data/landing/payments/payments.parquet`
-
-Localizacao do log de auditoria:
-
-- `evidence/execution-logs/pipeline_audit.jsonl`
+- colunas obrigatorias
+- IDs obrigatorios
+- tipagem de datas
+- tipagem de valores monetarios
+- remocao de espacos em campos textuais
+- geracao de `net_amount`
+- auditoria em `evidence/execution-logs/pipeline_audit.jsonl`
 
 ## Pipeline streaming
 
-O pipeline streaming local demonstra um fluxo de eventos inspirado em Azure Event Hubs, mas executando localmente com Redpanda como broker Kafka-compatible, sem uso de servicos reais de nuvem.
+O pipeline streaming demonstra publicacao e consumo de eventos locais com Redpanda, sem dependencia de cloud real.
 
-Redpanda simula localmente um padrao semelhante ao Azure Event Hubs / Kafka, permitindo publicar e consumir eventos de forma simples, reproduzivel e adequada para testes de integracao.
+Fluxo:
 
-Origem dos eventos:
+`events_sample.jsonl` -> producer -> topic `customer-events` -> consumer -> `data/landing/events/events.jsonl`
 
-- `data/samples/events_sample.jsonl`
-
-Topico usado:
-
-- `customer-events`
-
-Destino dos eventos consumidos:
-
-- `data/landing/events/events.jsonl`
-
-Comandos para subir o ambiente:
-
-```bash
-make up
-docker compose ps
-```
-
-Comandos para executar:
+Comandos:
 
 ```bash
 make streaming-producer
 make streaming-consumer
-```
-
-Comando opcional:
-
-```bash
 make streaming-demo
 ```
 
-Se o Redpanda Console estiver habilitado, ele pode ser acessado em:
-
-- `http://localhost:8080`
-
 ## Transformacoes com dbt
 
-O dbt neste projeto tem como objetivo demonstrar ELT local, padronizacao de modelos SQL e organizacao em camadas sobre o DuckDB como warehouse analitico local.
+O dbt organiza a camada analitica sobre o DuckDB local.
 
-Camadas do projeto dbt:
+Camadas:
 
-- `staging`: padroniza tipos, nomes e limpeza basica das fontes vindas da landing.
-- `intermediate`: camada reservada para combinacoes e regras de negocio reutilizaveis.
-- `marts`: camada final para tabelas analiticas prontas para consumo.
-
-O warehouse local usado pelo dbt e o DuckDB em `data/warehouse/local_warehouse.duckdb`. Em um ambiente cloud, esse mesmo profile poderia apontar para Snowflake, mantendo a mesma disciplina de modelagem e testes, sem afirmar que Snowflake roda localmente.
+- `staging`: limpeza, padronizacao e tipagem inicial
+- `intermediate`: combinacoes e regras reutilizaveis
+- `marts`: tabelas finais para consumo analitico
 
 Comandos:
 
@@ -190,67 +232,68 @@ make dbt-test
 make dbt-build
 ```
 
-O repositorio inclui `dbt/profiles.yml.example` e tambem um `dbt/profiles.yml` local nao sensivel, versionado apenas para facilitar a execucao com DuckDB local. Nao ha credenciais reais nesse profile.
-
-O modelo `stg_events` depende da existencia de `data/landing/events/events.jsonl`. Se esse arquivo ainda nao tiver sido gerado, rode `make streaming-demo` antes de `make dbt-build`.
-
-Observacao: os modelos `staging` que leem arquivos locais da landing podem ser materializados como `table` para evitar problemas de resolucao de caminhos relativos quando o DuckDB e consultado por ferramentas externas, como o Streamlit.
+Observacao importante: os modelos `staging` que leem arquivos da landing foram materializados como `table` para evitar problemas de resolucao de caminhos relativos quando o DuckDB e consultado por ferramentas externas, como o dashboard Streamlit.
 
 ## Modelagem analitica
 
-A camada `marts` concentra os modelos finais voltados para consumo analitico, consultas de negocio e futuras visualizacoes em dashboard. Ela recebe transformacoes padronizadas e reutilizaveis das camadas anteriores para entregar estruturas mais proximas das perguntas de negocio.
-
-As camadas do projeto seguem papeis complementares:
-
-- `staging`: faz padronizacao inicial, limpeza basica e tipagem das fontes vindas da landing.
-- `intermediate`: combina entidades, aplica regras reutilizaveis e prepara agregacoes tecnicas.
-- `marts`: publica dimensoes, fatos e visoes analiticas prontas para consumo.
-
-| Modelo | Camada | Finalidade | Tipo de saida |
+| Modelo | Camada | Tipo | Finalidade |
 | --- | --- | --- | --- |
-| `stg_customers` | staging | Padronizar dados cadastrais de clientes | view |
-| `stg_orders` | staging | Padronizar pedidos e valores comerciais | view |
-| `stg_payments` | staging | Padronizar pagamentos e seus status | view |
-| `stg_events` | staging | Padronizar eventos digitais consumidos localmente | view |
-| `int_orders_enriched` | intermediate | Enriquecer pedidos com dados de pagamento e sinal de qualidade | view |
-| `int_customer_events` | intermediate | Agregar eventos digitais por cliente | view |
-| `dim_customers` | marts | Disponibilizar a dimensao de clientes tratada | table |
-| `fct_orders` | marts | Disponibilizar a fato de pedidos com contexto de pagamento | table |
-| `mart_customer_360` | marts | Consolidar indicadores de clientes, pedidos e eventos em uma visao 360 | table |
+| `stg_customers` | staging | table | Padronizar atributos cadastrais |
+| `stg_orders` | staging | table | Padronizar pedidos e valores comerciais |
+| `stg_payments` | staging | table | Padronizar pagamentos e seus status |
+| `stg_events` | staging | table | Padronizar eventos digitais |
+| `int_orders_enriched` | intermediate | view | Enriquecer pedidos com sinais de pagamento |
+| `int_customer_events` | intermediate | view | Agregar eventos por cliente |
+| `dim_customers` | marts | table | Publicar dimensao de clientes |
+| `fct_orders` | marts | table | Publicar fato de pedidos |
+| `mart_customer_360` | marts | table | Consolidar relacionamento, receita e engajamento |
+
+## Qualidade de dados
+
+O projeto combina validacoes em dois niveis:
+
+- testes dbt para integridade analitica
+- testes Python para contratos, landing e auditoria
+
+O relatorio de qualidade fica em:
+
+- `evidence/execution-logs/data_quality_report.md`
+
+Comandos:
+
+```bash
+make test
+make quality-report
+```
 
 ## SQL e compatibilidade com Snowflake
 
-Este repositorio nao tenta executar Snowflake localmente. Ainda assim, a pasta `sql` foi organizada para mostrar como a camada analitica atual poderia ser descrita em um ambiente Snowflake sem mudar a logica central do laboratorio.
+Os arquivos em `sql/snowflake_compatible/` mostram como a camada analitica atual poderia ser descrita em um ambiente Snowflake, sem afirmar que Snowflake roda localmente.
 
-Estrutura adicionada:
+Arquivos principais:
 
-- `sql/snowflake_compatible/create_database.sql`: exemplo simples de criacao do database alvo.
-- `sql/snowflake_compatible/create_schemas.sql`: separacao de schemas para `RAW`, `STAGING`, `INTERMEDIATE`, `MARTS` e `CONTROL`.
-- `sql/snowflake_compatible/create_tables.sql`: tabelas base, tabelas analiticas e log operacional inspirados no fluxo atual.
-- `sql/snowflake_compatible/procedures_examples.sql`: exemplos curtos de procedure para auditoria e refresh de `mart_customer_360`.
-- `sql/analytical_queries/customer_360.sql`: leitura orientada a valor, receita e engajamento por cliente.
-- `sql/analytical_queries/revenue_by_channel.sql`: consolidacao de receita por canal e mes.
-- `sql/analytical_queries/payment_quality_summary.sql`: visao de qualidade e liquidacao de pagamentos.
-- `sql/analytical_queries/customer_engagement_summary.sql`: resumo de engajamento digital por segmento.
+- `create_database.sql`
+- `create_schemas.sql`
+- `create_tables.sql`
+- `procedures_examples.sql`
 
-Esses arquivos ajudam a explicar, em entrevista ou revisao tecnica, como o mesmo laboratorio local pode ser traduzido para um alvo mais proximo de Snowflake sem vender a ideia errada de que a nuvem ja esta em uso aqui.
+Consultas analiticas:
+
+- `customer_360.sql`
+- `revenue_by_channel.sql`
+- `payment_quality_summary.sql`
+- `customer_engagement_summary.sql`
 
 ## Dashboard local
 
-O dashboard local existe para fechar o ciclo do laboratorio: depois da ingestao batch, do fluxo streaming e das transformacoes com dbt, os dados curados podem ser consumidos em uma interface analitica simples e executavel no proprio ambiente local.
+O dashboard em Streamlit fecha o ciclo de consumo do laboratorio usando o DuckDB local como fonte analitica.
 
-Modelos consultados pelo painel:
+Modelos consultados:
 
 - `mart_customer_360`
 - `fct_orders`
 - `dim_customers`
 - `int_customer_events`
-
-Pre-requisitos:
-
-- ambiente Python preparado com as dependencias do projeto
-- arquivos de landing gerados pelos pipelines locais
-- DuckDB local atualizado via `dbt build`
 
 Comandos:
 
@@ -265,38 +308,26 @@ URL esperada:
 
 - `http://localhost:8501`
 
-Sugestao de evidencia:
-
-- `evidence/screenshots/streamlit-dashboard.png`
-
-O painel deixa claro que consome somente dados locais publicados em `data/warehouse/local_warehouse.duckdb`. Nao ha uso de Azure real, Snowflake real ou qualquer dependencia de ambiente externo para essa camada de consumo.
-
 ## CI/CD com GitHub Actions
 
-Os workflows deste repositorio existem para validar o laboratorio automaticamente a cada mudanca importante, sem depender de Azure real, Snowflake real, secrets ou servicos externos.
+Os workflows validam o projeto automaticamente sem depender de Azure real, Snowflake real, secrets ou servicos obrigatorios de infraestrutura no runner.
 
-Badges preparados para o repositorio futuro:
+Workflows:
 
-[![CI - Python Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml)
-[![CI - dbt Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml)
-[![CI - Documentation Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml)
-
-O que cada workflow valida:
-
-- `CI - Python Validation`: sintaxe Python, pipeline batch, testes automatizados e relatorio de qualidade.
-- `CI - dbt Validation`: preparo minimo dos arquivos de entrada, `dbt debug` e `dbt build` no DuckDB local.
-- `CI - Documentation Validation`: presenca dos arquivos essenciais de documentacao, configuracao e dashboard.
+- `CI - Python Validation`: `compileall`, batch, testes Python e relatorio de qualidade
+- `CI - dbt Validation`: batch, `prepare-dbt-inputs`, `dbt debug` e `dbt build`
+- `CI - Documentation Validation`: presenca da documentacao e dos arquivos centrais do repositorio
 
 Diferenca entre validacao local e validacao em CI:
 
-- localmente, o laboratorio pode usar `make streaming-demo` com Redpanda para demonstrar o fluxo completo de eventos
-- no GitHub Actions, o CI evita Docker e servicos externos para ficar mais simples, previsivel e barato de executar
+- localmente, o fluxo completo pode usar `make streaming-demo` com Redpanda
+- em CI, o projeto evita Docker e broker para manter a validacao simples e estavel
 
 Por que o CI usa `prepare-dbt-inputs`:
 
-- o `dbt build` precisa do arquivo `data/landing/events/events.jsonl`
-- em vez de subir Redpanda no workflow, o CI copia `data/samples/events_sample.jsonl` para a landing
-- isso preserva a validacao do dbt sem criar dependencia operacional de broker no runner
+- o `dbt build` precisa de `data/landing/events/events.jsonl`
+- em CI, esse arquivo e preparado a partir de `data/samples/events_sample.jsonl`
+- isso reduz dependencias externas e mantem a validacao reprodutivel
 
 Comandos locais equivalentes:
 
@@ -306,63 +337,54 @@ make ci-dbt
 make ci-docs
 ```
 
-## Qualidade de dados
+## Governanca de dados
 
-A camada de qualidade de dados deste projeto existe para demonstrar governanca tecnica, integridade de dados e validacao automatizada em um laboratorio local-first.
+O laboratorio documenta contratos, regras minimas de qualidade, auditoria e rastreabilidade para manter a evolucao tecnica controlada.
 
-Os testes `dbt` verificam regras diretamente nos modelos analiticos do DuckDB, com foco em `not_null`, `unique`, `accepted_values` e `relationships`. Ja os testes Python com `pytest` validam contratos dos arquivos de entrada, geracao dos artefatos de landing e consistencia basica dos logs de auditoria.
+Leituras principais:
 
-Validacoes implementadas:
+- [Contratos de dados](docs/data_contracts.md)
+- [Governanca de dados](docs/data_governance.md)
 
-- integridade de chaves como `customer_id` e `order_id`
-- dominios esperados para status de pagamento e lifecycle
-- relacionamento entre clientes, pedidos, pagamentos e eventos
-- presenca de colunas obrigatorias nas fontes sinteticas e nos parquet de landing
-- consistencia estrutural do arquivo `pipeline_audit.jsonl`
+Elementos praticos ja presentes:
 
-O relatorio local de qualidade e gerado em `evidence/execution-logs/data_quality_report.md`.
+- contratos das fontes sinteticas
+- testes automatizados dbt e pytest
+- relatorio de qualidade
+- log de auditoria do pipeline
+- validacao continua com GitHub Actions
 
-Comandos:
+## Evidencias de execucao
 
-```bash
-make test
-make quality-report
-make validate
-```
+Os caminhos abaixo representam os prints esperados para publicacao no GitHub. Eles nao devem ser tratados como evidencias existentes ate que sejam capturados e versionados manualmente.
 
-## Status inicial do projeto
+| Print esperado | Comando relacionado | Objetivo da evidencia | Status esperado |
+| --- | --- | --- | --- |
+| `evidence/screenshots/docker-compose-running.png` | `make up` / `make ps` | Mostrar servicos locais ativos | A capturar manualmente |
+| `evidence/screenshots/batch-pipeline-success.png` | `make batch` | Registrar ingestao batch concluida | A capturar manualmente |
+| `evidence/screenshots/streaming-demo-success.png` | `make streaming-demo` | Registrar publicacao e consumo de eventos | A capturar manualmente |
+| `evidence/screenshots/dbt-build-success.png` | `make dbt-build` | Mostrar build e testes dbt aprovados | A capturar manualmente |
+| `evidence/screenshots/pytest-success.png` | `make test` | Mostrar suite Python aprovada | A capturar manualmente |
+| `evidence/screenshots/quality-report-generated.png` | `make quality-report` | Mostrar geracao do relatorio de qualidade | A capturar manualmente |
+| `evidence/screenshots/streamlit-dashboard.png` | `make dashboard` | Mostrar camada de consumo analitico local | A capturar manualmente |
+| `evidence/screenshots/github-actions-success.png` | workflows do GitHub Actions | Mostrar validacoes em CI aprovadas | A capturar manualmente |
 
-- Etapa atual: estrutura base com servicos locais, fontes de dados sinteticas, utilitarios Python reutilizaveis, pipelines batch e streaming locais e camada ELT com dbt.
-- Escopo desta entrega: organizacao de diretorios, arquivos de configuracao, documentacao inicial, infraestrutura local de apoio, datasets pequenos para testes, base Python para ingestao, I/O, auditoria, ingestao batch, demonstracao streaming local e configuracao dbt com DuckDB.
-- Sem uso de servicos Azure reais.
-- Sem uso de Snowflake real.
+## Troubleshooting
 
-## Arquitetura proposta
+Problemas comuns e solucoes praticas foram organizados em:
 
-A proposta e evoluir o repositorio para uma arquitetura local com as seguintes camadas:
+- [docs/troubleshooting.md](docs/troubleshooting.md)
 
-1. Ingestao batch para carregar dados brutos e simular processos de aterrissagem.
-2. Ingestao streaming para representar eventos e micro-lotes em tempo quase real.
-3. Camada de armazenamento local para dados de entrada e artefatos intermediarios.
-4. Camada analitica em DuckDB para transformacoes, consultas e publicacao de datasets curados.
-5. Camada de modelagem com dbt para organizar modelos, testes e documentacao de dados.
-6. Camada de qualidade e governanca para validacoes, padroes e rastreabilidade.
-7. Camada de entrega com queries analiticas, dashboards, evidencias e automacao CI/CD.
+Esse guia cobre desde `python3` no WSL2 ate problemas de `events.jsonl`, Redpanda, Docker, Streamlit e resolucao de caminhos relativos no DuckDB.
 
-## Como este projeto simula Azure + Snowflake localmente
+## Proximos passos
 
-Este projeto nao executa Azure real nem Snowflake real. Em vez disso, utiliza equivalencias locais para estudar padroes arquiteturais:
+- adicionar capturas reais de execucao na pasta `evidence/screenshots/`
+- publicar evidencias do dashboard e dos workflows
+- testar cenarios incrementais no dbt
+- incluir cobertura de testes Python
+- explorar uma versao de deploy controlado em ambiente cloud ou local mais proximo de producao
 
-- Azure Blob Storage: sera representado por Azurite para simular armazenamento de objetos e padroes de landing zone.
-- Snowflake: nao roda localmente; os conceitos de warehouse, camadas analiticas e consultas serao simulados com DuckDB.
-- Azure Event Hubs: os padroes de streaming serao demonstrados com Redpanda ou Apache Kafka em ambiente local.
-- Orquestracao e automacao: serao representadas por scripts locais, Makefile e pipelines de CI/CD no GitHub Actions.
+## Autor
 
-O foco do laboratorio e aprender desenho de solucao, integracao entre componentes, boas praticas de engenharia e preparo para uma futura migracao para servicos gerenciados.
-
-## Limitacoes conhecidas
-
-- O ambiente local nao reproduz elasticidade, seguranca e operacao gerenciada de Azure e Snowflake.
-- Custos, performance distribuida e recursos corporativos avancados nao serao identicos ao ambiente de nuvem.
-- Algumas integracoes serao simuladas por convencao arquitetural e nao por compatibilidade total de produto.
-- A fidelidade do streaming local dependera das ferramentas escolhidas nas proximas etapas.
+- GitHub: [brodyandre](https://github.com/brodyandre)

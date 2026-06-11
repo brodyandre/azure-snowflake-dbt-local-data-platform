@@ -1,95 +1,158 @@
 # Arquitetura do Laboratorio
 
-## Proposito
+## Visao geral da arquitetura
 
-Definir a arquitetura inicial de um laboratorio local de Engenharia de Dados inspirado em padroes Azure + Snowflake, sem depender de servicos pagos.
+Este projeto foi desenhado como um laboratorio local-first de Engenharia de Dados. A proposta e mostrar como uma esteira moderna de ingestao, transformacao, validacao e consumo pode ser organizada de forma clara, reproduzivel e pronta para explicacao tecnica, mesmo sem depender de Azure real ou Snowflake real.
 
-## Camadas propostas
+O repositorio separa responsabilidades entre:
 
-1. `data/raw`: recepcao de dados brutos vindos de cargas locais ou simuladas.
-2. `data/landing`: zona intermediaria para dados preparados para processamento.
-3. `src/batch`: pipelines batch e rotinas de carga.
-4. `src/streaming`: produtores, consumidores e adaptadores de eventos.
-5. `src/quality`: regras de validacao, contratos e checks de qualidade.
-6. `dbt`: projeto analitico e transformacoes orientadas a modelo.
-7. `sql`: consultas compativeis com a proposta analitica do projeto.
-8. `dashboard`: camada futura para visualizacao de resultados.
-9. `.github/workflows`: automacao CI/CD do repositorio.
+- fontes simuladas
+- pipelines Python
+- camada `landing`
+- modelagem com dbt
+- warehouse local em DuckDB
+- dashboard em Streamlit
+- validacoes automatizadas em CI/CD
 
-## Componentes locais planejados
+## Decisao local-first
 
-- Azurite para simular padroes de Azure Blob Storage.
-- DuckDB para representar conceitos de warehouse analitico inspirados em Snowflake.
-- Redpanda ou Apache Kafka para representar padroes de streaming inspirados em Azure Event Hubs.
-- dbt para modelagem, testes e organizacao das transformacoes.
+A decisao local-first foi adotada para manter o projeto:
 
-## Fluxo streaming local
+- simples de executar no WSL2
+- barato de manter
+- facil de validar em entrevista ou demonstracao
+- proximo de boas praticas reais de Engenharia de Dados
 
-O fluxo streaming proposto para este laboratorio segue o caminho abaixo:
+Em vez de simular a nuvem com excesso de complexidade, o laboratorio prioriza separacao de camadas, contratos, validacoes e rastreabilidade.
+
+## Simulacao de servicos cloud
+
+O projeto usa componentes locais para representar conceitos de uma arquitetura corporativa:
+
+| Componente local | Equivalente conceitual | Papel arquitetural |
+| --- | --- | --- |
+| Azurite | Azure Blob Storage / ADLS Gen2 | Landing zone, armazenamento de arquivos e artefatos |
+| Redpanda | Azure Event Hubs / Kafka | Publicacao e consumo de eventos |
+| DuckDB | Snowflake | Camada analitica local |
+| dbt + DuckDB | dbt + Snowflake | Transformacao em camadas, testes e documentacao |
+| GitHub Actions | GitHub Actions / Azure DevOps | Validacao continua e automacao |
+
+## Fluxo batch
+
+O pipeline batch le arquivos sinteticos de `data/samples`, valida a estrutura minima e grava a camada `landing` em parquet.
+
+Fluxo:
+
+`customers.csv`, `orders.csv`, `payments.json`
+-> `src/batch`
+-> `data/landing`
+
+Objetivos do fluxo batch:
+
+- padronizar ingestao de dados estruturados
+- aplicar validacoes simples e reutilizaveis
+- preparar a camada de entrada para dbt
+- registrar auditoria de execucao
+
+## Fluxo streaming
+
+O pipeline streaming usa Redpanda localmente para demonstrar uma esteira de eventos sem depender de servico cloud real.
+
+Fluxo:
 
 `events_sample.jsonl`
 -> producer Python
--> Redpanda topic `customer-events`
+-> topic `customer-events`
 -> consumer Python
 -> `data/landing/events/events.jsonl`
 
-Esse fluxo permite demonstrar publicacao e consumo de eventos em ambiente local, sem depender de Azure real, mantendo o desenho compativel com padroes de event streaming usados em arquiteturas cloud.
+Esse fluxo existe para demonstrar integracao, consumo e persistencia de eventos em ambiente local.
 
-## Camada ELT com dbt
+## dbt e DuckDB
 
-O fluxo ELT planejado para a camada analitica local segue o caminho abaixo:
+O dbt organiza a camada analitica sobre o DuckDB local em tres niveis:
 
-`data/landing`
+- `staging`
+- `intermediate`
+- `marts`
+
+Fluxo principal:
+
+`landing files`
 -> `dbt staging tables`
 -> `dbt intermediate`
 -> `dbt marts`
 -> `data/warehouse/local_warehouse.duckdb`
 
-Nessa abordagem, o dbt organiza as transformacoes em camadas e o DuckDB funciona como warehouse analitico local. A materializacao da `staging` como `table` ajuda a desacoplar o consumo analitico dos caminhos relativos usados pelas fontes locais. Em um ambiente cloud, o profile do dbt poderia apontar para Snowflake, preservando os conceitos de modelagem sem afirmar que Snowflake roda localmente.
+O DuckDB funciona como warehouse analitico local e permite validar SQL, testes dbt e consumo do dashboard sem infraestrutura adicional.
 
-## Fluxo de modelagem dbt
+## Staging como table para estabilidade de consumo
 
-O fluxo de modelagem analitica implementado no dbt segue a sequencia abaixo:
+Os modelos `staging` que leem diretamente a camada `landing` foram materializados como `table`. Essa decisao foi importante para estabilizar o consumo do DuckDB por ferramentas externas, como o Streamlit.
 
-`landing files`
--> `staging`
--> `intermediate`
--> `marts`
--> `analytics/dashboard`
+Sem essa materializacao, views que apontavam para arquivos externos podiam depender de caminhos relativos e falhar quando o banco era consultado fora do contexto do dbt. Ao materializar `staging` como `table`, o consumo do dashboard ficou desacoplado desses caminhos.
 
-Nesse desenho, os arquivos tratados na landing servem como base para a padronizacao inicial, as regras reutilizaveis ficam concentradas na camada intermediate e os datasets finais ficam publicados na camada marts para consumo analitico.
+## Camada marts
 
-## Camada de consumo analitico
+A camada `marts` concentra os datasets finais para consumo analitico:
 
-O fluxo de consumo analitico deste laboratorio segue um desenho direto e facil de explicar:
+- `dim_customers`
+- `fct_orders`
+- `mart_customer_360`
 
-`landing files`
--> `dbt staging tables`
--> `dbt intermediate e marts`
+Esses modelos representam a parte mais proxima das perguntas de negocio do laboratorio, como receita, valor de cliente, canal de venda, status de pagamento e comportamento digital.
+
+## Dashboard
+
+O dashboard em Streamlit consome o DuckDB local e fecha o ciclo do laboratorio:
+
+`dbt marts`
 -> `DuckDB local`
--> `Streamlit dashboard`
+-> `dashboard/app.py`
 
-Com isso, o projeto mostra nao apenas ingestao e transformacao, mas tambem a etapa final de consumo dos dados curados em uma interface local, sem depender de cloud real.
+Ele foi mantido simples de proposito: o objetivo e demonstrar a camada de consumo analitico, nao construir um front-end complexo.
 
 ## Automacao e validacao continua
 
-O repositorio usa GitHub Actions para validar sintaxe Python, testes, `dbt build` e a presenca da documentacao principal. Essa automacao roda sem Azure real, Snowflake real, secrets ou servicos externos obrigatorios no runner.
+O repositorio usa GitHub Actions para validar:
 
-Para manter o CI simples e estavel, a validacao do dbt nao sobe Redpanda nem Docker. Em vez disso, prepara os arquivos minimos da landing para que o DuckDB e o dbt consigam validar a camada analitica de forma reproduzivel. Isso reforca uma pratica de DevOps aplicada a Engenharia de Dados: automatizar verificacoes importantes sem tornar a esteira mais fragil do que o necessario.
+- sintaxe Python
+- testes Python
+- `dbt debug`
+- `dbt build`
+- presenca da documentacao essencial
 
-## Principios arquiteturais
+O CI nao usa Azure real, Snowflake real, secrets ou Redpanda obrigatorio no runner. Para manter a esteira previsivel, a validacao do dbt usa `prepare-dbt-inputs` para criar o arquivo de eventos necessario sem depender do broker.
 
-- Evolucao incremental do repositorio.
-- Separar dados brutos, dados em processamento e artefatos analiticos.
-- Privilegiar componentes locais simples, reproduziveis e de baixo custo.
-- Documentar decisoes desde o inicio para facilitar migracao futura.
+Isso mostra uma pratica relevante de DevOps aplicada a Engenharia de Dados: automatizar o que importa sem tornar o pipeline fragil demais.
 
-## Compatibilidade conceitual com Snowflake
+## Pontos de migracao para Azure + Snowflake
 
-O laboratorio usa DuckDB para execucao local, mas tenta manter nomenclatura, separacao de camadas e contratos de dados proximos do que seria esperado em uma esteira com Snowflake. Isso reduz retrabalho na migracao futura porque os modelos dbt, as regras de qualidade e as consultas analiticas continuam organizados por responsabilidade, nao por ferramenta.
+O desenho atual foi organizado para facilitar uma migracao futura, se desejado:
 
-Os scripts em `sql/snowflake_compatible` nao afirmam que Snowflake roda localmente. Eles existem para mostrar como database, schemas, tabelas de controle, tabelas analiticas e procedures poderiam ser descritos em um ambiente gerenciado, preservando a mesma logica de negocio usada hoje no DuckDB.
+- `data/landing` pode evoluir para Blob Storage ou ADLS
+- DuckDB pode ser substituido por Snowflake
+- Redpanda pode ser substituido por Azure Event Hubs
+- o profile do dbt pode apontar para um ambiente gerenciado
+- GitHub Actions pode evoluir para uma esteira com ambientes, aprovacoes e controles mais fortes
+
+## Resumo arquitetural
+
+Fluxo completo do laboratorio:
+
+```text
+Fontes simuladas
+-> data/samples
+-> pipelines Python
+-> data/landing
+-> dbt staging tables
+-> dbt intermediate
+-> dbt marts
+-> DuckDB local
+-> Streamlit dashboard
+-> GitHub Actions
+```
 
 ## Observacao importante
 
-Este projeto nao executa Azure nem Snowflake reais. O objetivo e simular conceitos arquiteturais, padroes operacionais e fluxos de desenvolvimento usando alternativas locais.
+Este projeto nao executa Azure nem Snowflake reais. O objetivo e demonstrar desenho de solucao, disciplina de engenharia e capacidade de validacao em um ambiente local e reproduzivel.

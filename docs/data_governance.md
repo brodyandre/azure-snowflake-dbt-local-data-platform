@@ -1,47 +1,106 @@
 # Governanca de Dados
 
-## Diretrizes iniciais
+## Objetivo da governanca neste laboratorio
 
-- Organizar dados por estagio de processamento.
-- Preservar rastreabilidade entre origem, transformacao e consumo.
-- Versionar apenas artefatos adequados ao Git, evitando dados sensiveis ou volumosos.
-- Registrar evidencias de execucao quando fizer sentido para auditoria tecnica.
+A governanca deste projeto nao tenta replicar um programa corporativo completo. O objetivo aqui e mostrar, de forma local e didatica, como contratos, validacoes, auditoria e rastreabilidade podem ser tratados com seriedade mesmo em uma POC.
 
-## Convencoes propostas
+## Contratos de dados
 
-- Scripts Python em `snake_case`.
-- Consultas SQL separadas entre compatibilidade analitica e uso exploratorio.
-- Documentacao em Markdown com foco tecnico e objetivo.
-- Dados brutos nao devem ser versionados por padrao.
+Os contratos das fontes sinteticas estao documentados em [data_contracts.md](./data_contracts.md). Eles deixam explicitos:
 
-## Qualidade e controle
+- campos esperados
+- tipos logicos
+- obrigatoriedade
+- dominios permitidos
+- regras basicas de negocio
+- exemplos de validacao
 
-- Testes automatizados serao adicionados progressivamente.
-- Regras de qualidade devem acompanhar a evolucao dos datasets.
-- Mudancas de estrutura devem ser refletidas na documentacao do repositorio.
+Isso reduz ambiguidade e ajuda a manter alinhamento entre ingestao, transformacao e consumo.
 
-## Controles implementados
+## Qualidade de dados
 
-- Contratos de dados documentam formato, campos esperados e regras minimas das fontes sinteticas.
-- Testes automatizados com `dbt` verificam integridade dos modelos analiticos no DuckDB local.
-- Testes Python com `pytest` validam fontes de entrada, artefatos de landing e consistencia dos logs de auditoria.
-- A auditoria de execucao em `pipeline_audit.jsonl` preserva rastreabilidade basica das execucoes locais.
-- O relatorio `data_quality_report.md` consolida verificacoes operacionais por dataset para inspecao rapida.
+A qualidade de dados e tratada em dois niveis complementares:
 
-## Rastreabilidade local
+- `pytest` valida contratos, fontes e artefatos gerados pelos pipelines
+- `dbt` valida integridade, dominios e relacionamentos da camada analitica
 
-Mesmo sem Azure real ou Snowflake real, o laboratorio mantem uma trilha tecnica clara entre:
+Exemplos de controles ja implementados:
 
-- arquivos de origem sinteticos
-- pipelines batch e streaming
-- camadas `staging`, `intermediate` e `marts` no dbt
-- logs de auditoria e evidencias geradas localmente
+- `not_null`
+- `unique`
+- `relationships`
+- `accepted_values`
+- verificacao de artefatos de landing
+- consistencia estrutural do log de auditoria
 
-## Evolucao para Azure + Snowflake
+## Auditoria
 
-Em uma arquitetura Azure + Snowflake real, esses mesmos controles poderiam ser expandidos com:
+O pipeline batch grava um log de auditoria em:
 
-- contratos de dados publicados em catalogos corporativos
-- testes dbt executados em pipelines CI/CD e ambientes promovidos
-- auditoria centralizada em storage e monitoramento gerenciado
-- rastreabilidade integrada entre ingestao, transformacao, observabilidade e governanca
+- `evidence/execution-logs/pipeline_audit.jsonl`
+
+Esse arquivo ajuda a registrar, de forma simples:
+
+- execucao do pipeline
+- status da execucao
+- momento da escrita
+- consistencia basica da esteira local
+
+Nao e uma trilha corporativa completa, mas demonstra a preocupacao com observabilidade e evidencia tecnica.
+
+## Rastreabilidade
+
+O projeto mantem uma linha de rastreabilidade clara entre:
+
+- fontes em `data/samples`
+- artefatos processados em `data/landing`
+- modelos `staging`, `intermediate` e `marts`
+- consultas SQL analiticas
+- dashboard Streamlit
+- logs e relatorios em `evidence/execution-logs`
+
+Essa cadeia facilita entendimento, depuracao e demonstracao do fluxo ponta a ponta.
+
+## Testes automatizados
+
+Os testes sao parte da governanca do projeto, nao um detalhe isolado.
+
+Camadas de validacao:
+
+- testes Python em `tests/`
+- testes dbt declarados nos arquivos `schema.yml`
+- workflows GitHub Actions para repetibilidade em CI
+
+Esse conjunto ajuda a impedir que o repositorio dependa apenas de validacao manual.
+
+## Governanca local
+
+Como o projeto foi desenhado para rodar localmente, a governanca tambem segue um desenho local-first:
+
+- sem dados sensiveis reais
+- sem secrets reais
+- sem dependencia obrigatoria de cloud
+- com documentacao versionada
+- com comandos padronizados por `Makefile`
+
+Esse modelo e suficiente para fins de portfolio, estudo e demonstracao tecnica.
+
+## Como isso migraria para Azure + Snowflake
+
+Em uma evolucao para ambiente corporativo, a governanca local poderia ser expandida com:
+
+- contratos em catalogos ou repositorios corporativos
+- controle de acesso por roles e ownership
+- auditoria centralizada em storage e observabilidade gerenciada
+- testes em multiplos ambientes com aprovacao
+- politicas de classificacao, masking e retention
+
+## Resumo
+
+O laboratorio mostra que governanca nao precisa comecar apenas quando a plataforma chega em producao. Mesmo em um projeto local, ja e possivel demonstrar:
+
+- contratos
+- qualidade
+- auditoria
+- rastreabilidade
+- validacao automatizada

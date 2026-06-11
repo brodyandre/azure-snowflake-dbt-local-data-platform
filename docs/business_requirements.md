@@ -1,36 +1,80 @@
 # Requisitos de Negocio
 
-## Contexto
+## Contexto de negocio simulado
 
-O projeto busca demonstrar uma plataforma de dados local que possa servir como portfolio tecnico e ambiente de estudo para Engenharia de Dados moderna.
+O laboratorio representa um cenario simplificado de uma operacao digital que combina cadastro de clientes, pedidos, pagamentos e eventos de navegacao. A ideia nao e reproduzir um dominio completo, mas criar um ambiente pequeno e coerente para demonstrar como Engenharia de Dados apoia operacao, analise e governanca.
 
-## Objetivos de negocio
+As fontes sinteticas simulam:
 
-- Demonstrar dominio pratico de pipelines batch e streaming.
-- Evidenciar uso disciplinado de SQL, dbt, testes e documentacao.
-- Criar um ambiente reproduzivel para evoluir cenarios de ingestao, transformacao e consumo analitico.
-- Manter o projeto compativel com uma futura migracao para componentes Azure e Snowflake reais.
+- um cadastro mestre de clientes
+- uma operacao de vendas multicanal
+- um gateway de pagamentos
+- sinais de comportamento digital e suporte
 
-## Capacidades esperadas
+## Necessidades de negocio
 
-- Carregar datasets brutos e processa-los por camadas.
-- Simular eventos de streaming e consumo analitico.
-- Produzir modelos curados com dbt.
-- Aplicar verificacoes basicas de qualidade de dados.
-- Gerar evidencias para fins de documentacao e auditoria tecnica.
+Do ponto de vista do negocio, a plataforma precisa permitir:
 
-## Perguntas de negocio
+- consolidar clientes, pedidos e pagamentos em uma base confiavel
+- acompanhar receita liquida e desempenho por canal
+- entender engajamento digital e lifecycle de clientes
+- identificar pendencias e problemas de pagamento
+- manter rastreabilidade minima das execucoes e validacoes
 
-Os modelos analiticos da camada `marts` devem responder, de forma simples e reproduzivel, as seguintes perguntas de negocio:
+## Requisitos funcionais
+
+O projeto deve ser capaz de:
+
+1. Ler datasets sinteticos locais em formatos CSV, JSON e JSON Lines.
+2. Processar essas fontes em pipelines Python de forma reprodutivel.
+3. Publicar uma camada `landing` pronta para transformacao analitica.
+4. Organizar transformacoes com dbt em `staging`, `intermediate` e `marts`.
+5. Produzir datasets finais de consumo, incluindo `dim_customers`, `fct_orders` e `mart_customer_360`.
+6. Validar qualidade minima com testes dbt e testes Python.
+7. Gerar um relatorio operacional de qualidade.
+8. Disponibilizar consultas analiticas e um dashboard local.
+9. Validar o repositorio automaticamente por GitHub Actions.
+
+## Requisitos nao funcionais
+
+O laboratorio tambem precisa atender a alguns requisitos tecnicos e operacionais:
+
+- execucao local em WSL2 sem cloud real
+- baixo custo operacional
+- reprodutibilidade dos comandos
+- documentacao clara para estudo e portfolio
+- separacao entre ingestao, transformacao, consumo e validacao
+- ausencia de segredos reais e credenciais externas
+- simplicidade suficiente para rodar localmente sem perder valor tecnico
+
+## Perguntas analiticas respondidas pelo projeto
+
+A camada analitica foi organizada para responder perguntas como:
 
 - Qual e a receita liquida por cliente?
-- Quais clientes possuem maior valor acumulado?
-- Quais canais concentram mais pedidos?
-- Quais clientes tem eventos digitais sem compra concluida?
-- Quais pedidos possuem problemas ou pendencias de pagamento?
+- Quais clientes concentram maior valor acumulado?
+- Quais canais trazem mais pedidos e receita?
+- Quais pagamentos estao pagos, pendentes, falhos ou sem registro?
+- Quais clientes demonstram engajamento digital sem conversao?
+- Como combinar sinais de pedidos, pagamentos e eventos em uma visao `customer 360`?
 
-## Restricoes
+## Relacao com Engenharia de Dados corporativa
 
-- Nao utilizar servicos pagos.
-- Nao depender de cloud real nesta etapa.
-- Priorizar simplicidade operacional em WSL2 no Windows 11.
+Mesmo sendo um laboratorio local, o projeto conversa diretamente com necessidades comuns em ambientes corporativos:
+
+- ingestao de dados de multiplas fontes
+- modelagem em camadas
+- padronizacao de contratos e schemas
+- qualidade de dados automatizada
+- rastreabilidade de execucoes
+- consumo analitico por tabelas e dashboard
+- validacao continua por CI/CD
+
+## Valor do laboratorio para portfolio
+
+Este projeto serve como prova pratica de que o autor consegue:
+
+- organizar uma plataforma de dados pequena, mas coerente
+- transformar requisitos de negocio em componentes tecnicos
+- explicar arquitetura, fluxos e validacoes com clareza
+- conectar batch, streaming, dbt, SQL, dashboard e CI em um unico repositorio

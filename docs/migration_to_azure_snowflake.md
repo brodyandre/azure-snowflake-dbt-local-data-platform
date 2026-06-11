@@ -2,131 +2,153 @@
 
 ## Objetivo
 
-Registrar como este laboratorio local pode evoluir para uma arquitetura real em Azure + Snowflake sem perder a disciplina de modelagem, testes, automacao e rastreabilidade ja adotada no repositorio.
+Registrar como este laboratorio local pode evoluir para uma arquitetura real em Azure + Snowflake sem perder a disciplina de modelagem, testes, automacao, rastreabilidade e governanca ja praticada no repositorio.
 
-## Ponto de partida do laboratorio
+## Principio orientador
 
-Hoje o projeto roda totalmente local:
+O mapeamento deste documento e conceitual. O laboratorio nao tenta afirmar que os componentes locais sao equivalentes completos aos servicos cloud. A proposta e mostrar uma trilha plausivel de evolucao, mantendo o desenho tecnico portavel.
 
-- Azurite representa a ideia de object storage.
-- DuckDB representa a camada analitica local.
-- Redpanda demonstra eventos e consumo streaming.
-- dbt organiza transformacoes e testes.
-- Makefile e GitHub Actions concentram automacao operacional.
-
-Essa base nao tenta reproduzir a nuvem por completo. O valor aqui esta em manter contratos de dados, camadas claras, SQL legivel e uma esteira reproduzivel.
-
-## Mapeamento conceitual entre local e cloud
+## Mapeamento principal
 
 | Laboratorio local | Destino futuro | Papel arquitetural |
 | --- | --- | --- |
-| Azurite | Azure Blob Storage ou ADLS Gen2 | Landing zone, arquivos de entrada, armazenamento de artefatos e zonas raw |
-| DuckDB | Snowflake | Camada analitica, transformacoes, marts e consultas SQL |
-| Redpanda | Azure Event Hubs | Ingestao de eventos, buffering e distribuicao de mensagens |
-| dbt + DuckDB profile | dbt + Snowflake profile | Modelagem em camadas, testes, documentacao e promocao entre ambientes |
-| Makefile + GitHub Actions | GitHub Actions + secrets + ambientes | Automacao, validacao, execucao controlada e rastreabilidade |
+| DuckDB | Snowflake | Camada analitica, transformacoes e datasets finais |
+| Azurite | Azure Blob Storage ou ADLS Gen2 | Landing zone, artefatos de carga e armazenamento de arquivos |
+| Redpanda | Azure Event Hubs | Publicacao e consumo de eventos |
+| GitHub Actions local-first | GitHub Actions e/ou Azure DevOps | Validacao, automacao e promocao entre ambientes |
+| dbt local com DuckDB | dbt com Snowflake | Modelagem, testes, documentacao e governanca de transformacoes |
 
 ## DuckDB para Snowflake
 
-DuckDB foi escolhido porque simplifica a execucao local e permite iterar rapido em SQL, dbt e testes. Em uma migracao real, o alvo analitico seria Snowflake, mas a estrutura do projeto ja ajuda nessa transicao:
+O DuckDB foi escolhido por simplicidade operacional. Ele permite validar:
 
-- os modelos dbt seguem separacao em `staging`, `intermediate` e `marts`
-- os contratos de qualidade continuam validos mesmo trocando o engine
-- a nomenclatura das entidades finais, como `dim_customers`, `fct_orders` e `mart_customer_360`, continua portavel
-- a pasta `sql/snowflake_compatible` mostra exemplos de DDL e procedures em sintaxe orientada a Snowflake
+- modelagem em camadas
+- SQL analitico
+- testes dbt
+- consumo local por dashboard
 
-O que mudaria na pratica:
+Na migracao para Snowflake, a maior mudanca estaria em:
 
-- o `profiles.yml` do dbt passaria a apontar para uma conta Snowflake
-- tabelas externas ou cargas para schemas `RAW` substituiriam leituras diretas de arquivos locais
-- escolhas de materializacao poderiam variar entre `view`, `table` e `incremental` conforme volume e custo
+- profile do dbt
+- configuracao de databases, schemas e warehouses
+- estrategia de materializacao
+- controle de custo e concorrencia
 
-## Azurite para Azure Blob Storage ou ADLS Gen2
+O que tende a permanecer:
 
-No laboratorio, os dados entram por arquivos locais e zonas como `data/landing`. Em Azure real, o caminho natural seria publicar esses dados em Blob Storage ou ADLS Gen2 com uma convencao de paths por dominio, data e tipo de carga.
+- nomes de modelos
+- contratos analiticos
+- logica de negocio
+- estrutura `staging` -> `intermediate` -> `marts`
 
-Evolucao esperada:
+## Azurite para Azure Blob Storage ou ADLS
 
-- trocar caminhos locais por containers e pastas controladas
-- usar naming padrao para `raw`, `landing`, `curated` e `artifacts`
-- registrar politicas de retencao, lifecycle e permissao de acesso por zona
-- gerar logs de carga e manifests em storage para auditoria
+No laboratorio, a camada `landing` e local. Em Azure real, esse papel seria absorvido por Blob Storage ou ADLS Gen2.
+
+Pontos de evolucao:
+
+- containers por zona de dados
+- convencoes de paths por dominio e data
+- retention policy
+- separacao entre `raw`, `landing`, `curated` e `artifacts`
+- logs operacionais centralizados
 
 ## Redpanda para Azure Event Hubs
 
-O fluxo de eventos deste laboratorio existe para mostrar integracao e consumo, nao para simular toda a operacao gerenciada de um broker cloud. Em uma migracao real, o topico `customer-events` poderia virar um Event Hub com produtores e consumidores autenticados por identidade gerenciada ou credenciais controladas.
+O papel do Redpanda no laboratorio e demonstrar integracao e persistencia de eventos. Em um ambiente corporativo, isso pode migrar para Azure Event Hubs ou outra infraestrutura gerenciada de mensageria.
 
-O que permanece util:
+O que continua relevante:
 
-- padrao de evento JSON
-- separacao entre produtor, consumidor e persistencia na landing
-- necessidade de idempotencia, controle de offset e observabilidade
+- padrao do evento
+- separacao entre produtor e consumidor
+- persistencia em camada de aterrissagem
+- preocupacao com idempotencia, offset e observabilidade
 
-## dbt com Snowflake
+## GitHub Actions para GitHub Actions ou Azure DevOps
 
-dbt continua sendo a ponte mais natural entre o laboratorio e um ambiente corporativo. A mudanca principal seria o adapter e o profile, nao a estrutura do projeto.
+O projeto ja usa GitHub Actions para validar Python, dbt e documentacao. Em um ambiente corporativo, isso pode continuar em GitHub Actions ou ser promovido para Azure DevOps, dependendo do padrao da empresa.
 
-Aspectos que seguem iguais:
+Evolucoes naturais:
 
-- organizacao por camadas
-- testes `not_null`, `unique`, `relationships` e `accepted_values`
-- documentacao por modelo e por coluna
-- `dbt build` como comando de validacao ponta a ponta
+- aprovacao por ambiente
+- promocoes entre `dev`, `staging` e `prod`
+- artifacts de build e manifestos
+- gates de qualidade mais fortes
+- integracao com secrets manager
 
-Aspectos que precisariam de ajuste:
+## dbt local para dbt com Snowflake
 
-- configuracao do adapter `dbt-snowflake` em ambiente real
-- definicao de database, schema e warehouse por ambiente
-- estrategia de materializacao para custo e performance
-- uso de `sources`, `stages` e possivelmente tabelas externas
+O dbt ja organiza a plataforma em camadas reutilizaveis. Em uma migracao real:
 
-## Variaveis, profiles e seguranca
+- o adapter mudaria para `dbt-snowflake`
+- o profile deixaria de apontar para o DuckDB local
+- tabelas externas, stages e cargas controladas poderiam substituir parte da leitura direta dos arquivos
 
-O laboratorio local versiona apenas configuracoes nao sensiveis. Em uma migracao real, o caminho profissional seria:
+O valor da abordagem atual e que a disciplina de modelagem ja esta pronta antes da troca de engine.
 
-- manter `profiles.yml` sensivel fora do repositorio
-- usar `env vars` para credenciais e nomes de ambiente
-- guardar segredos em GitHub Secrets, Azure Key Vault ou outra solucao apropriada
-- separar credenciais por ambiente, sem reaproveitar usuario de desenvolvimento em producao
+## Cuidados com RBAC
 
-Boas praticas recomendadas:
+Em Snowflake, a governanca de acesso precisa ser tratada com mais rigor. Alguns cuidados importantes:
 
-- nunca commitar tokens, chaves ou contas de servico
-- usar roles dedicadas para carga, transformacao e leitura analitica
-- limitar permissoes ao minimo necessario
+- separar roles por responsabilidade
+- evitar uso excessivo de ownership compartilhado
+- definir roles para carga, transformacao e consumo
+- limitar privilegios ao minimo necessario
 
-## CI/CD para dbt e SQL
+Exemplos de papeis:
 
-Em um ambiente com Snowflake, a automacao poderia seguir a mesma disciplina ja usada aqui:
+- `loader`
+- `transformer`
+- `analyst`
+- `read_only`
 
-1. Pull request valida lint, testes Python e `dbt build`.
-2. Merge em branch principal publica modelos aprovados em ambiente controlado.
-3. Scripts SQL de DDL e procedures rodam em etapa separada, com revisao e rastreabilidade.
-4. Logs, manifests e relatarios ficam salvos como artifacts do pipeline.
+## Cuidados com secrets
 
-Esse desenho ajuda especialmente em Engenharia de Dados porque evita mudancas manuais diretas no warehouse e cria historico claro de quem alterou o que.
+O laboratorio atual nao usa segredos reais. Em ambiente cloud, isso precisa mudar de forma controlada:
 
-## Custos, RBAC, roles, warehouses e governanca
+- nunca versionar credenciais no repositorio
+- usar `env vars`, GitHub Secrets, Azure Key Vault ou solucao equivalente
+- separar credenciais por ambiente
+- evitar compartilhamento de usuario tecnico entre multiplos fluxos
 
-Snowflake traz vantagens operacionais, mas exige disciplina para custo e seguranca.
+## Cuidados com custos
 
-Pontos importantes para uma evolucao madura:
+Ao migrar para Snowflake e Azure, custo vira parte da arquitetura. Alguns cuidados esperados:
 
-- definir warehouses separados para desenvolvimento, transformacao e consumo
-- habilitar auto-suspend e auto-resume para evitar custo ocioso
-- usar roles por funcao, como `loader`, `transformer`, `analyst` e `read_only`
-- aplicar governanca por schema, ownership claro e politicas de acesso
-- considerar masking, tagging e classificacao de dados sensiveis quando o dominio exigir
+- limitar processamento ocioso
+- revisar frequencia de jobs
+- definir materializacoes compativeis com volume real
+- evitar warehouse superdimensionado
 
-## Caminho de evolucao sugerido
+## Cuidados com warehouses
 
-1. Publicar os dados de entrada em Blob Storage ou ADLS.
-2. Criar schemas `RAW`, `STAGING`, `INTERMEDIATE`, `MARTS` e `CONTROL` em Snowflake.
-3. Configurar um profile dbt especifico para ambiente cloud.
-4. Adaptar ingestao batch e streaming para gravar em storage e/ou tabelas controladas.
-5. Promover o `dbt build` e os SQLs compativeis com Snowflake para uma esteira CI/CD com aprovacao.
-6. Acrescentar observabilidade operacional, custos e politicas de acesso.
+Snowflake traz elasticidade, mas tambem exige criterio operacional. Boas praticas comuns:
+
+- warehouses separados por finalidade
+- `auto-suspend` e `auto-resume`
+- isolamento entre cargas pesadas e consumo analitico
+- observacao de concorrencia e tempo de execucao
+
+## Cuidados com governanca
+
+A governanca local deste laboratorio pode migrar para um desenho mais robusto com:
+
+- catalogo de dados
+- classificacao de dados sensiveis
+- mascaramento
+- linhagem
+- auditoria centralizada
+- politicas de retencao
+
+## Caminho sugerido de evolucao
+
+1. Migrar a landing para Blob Storage ou ADLS.
+2. Configurar profile dbt para Snowflake.
+3. Criar schemas por camada analitica.
+4. Adaptar automacao para ambientes promoviveis.
+5. Introduzir secrets e RBAC de forma segura.
+6. Ajustar materializacoes e warehouses conforme custo e volume.
 
 ## Observacao final
 
-Este repositorio nao usa Azure nem Snowflake reais nesta fase. A proposta e preparar o desenho tecnico e os habitos de engenharia para que a migracao futura seja mais previsivel, menos manual e melhor documentada.
+O valor deste laboratorio nao esta em fingir que a migracao ja aconteceu. O valor esta em mostrar um repositorio organizado o bastante para que essa migracao futura seja possivel com menos improviso e mais previsibilidade.
