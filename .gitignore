@@ -1,7 +1,9 @@
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 .pytest_cache/
+.mypy_cache/
 .ruff_cache/
 
 # Virtual environments
@@ -11,6 +13,9 @@ env/
 
 # Local environment files
 .env
+.env.local
+.env.*
+!.env.example
 
 # Build and packaging
 build/
@@ -18,6 +23,8 @@ dist/
 *.egg-info/
 
 # dbt artifacts
+dbt/target/
+dbt/logs/
 dbt_packages/
 target/
 logs/
@@ -26,9 +33,18 @@ dbt/.user.yml
 # Local analytical files
 *.duckdb
 *.duckdb-wal
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+*.log
 
 # Local storage and execution artifacts
 .azurite/
+.streamlit/cache/
+.streamlit/credentials.toml
+.streamlit/secrets.toml
 data/raw/*
 !data/raw/.gitkeep
 data/landing/*

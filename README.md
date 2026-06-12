@@ -525,6 +525,8 @@ Esse guia cobre desde `python3` no WSL2 ate problemas de `events.jsonl`, Redpand
 
 ## Autor
 
+- Nome: Luiz Andre de Souza
 - GitHub: [brodyandre](https://github.com/brodyandre)
+- LinkedIn: [luiz-andre-souza-data-engineer](https://www.linkedin.com/in/luiz-andre-souza-data-engineer/)
 
 [Voltar ao indice](#indice)
