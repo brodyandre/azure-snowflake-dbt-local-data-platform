@@ -244,14 +244,14 @@ def main() -> None:
     st.subheader("Visao geral")
     render_kpis(kpis_df)
     st.write("Resumo do `mart_customer_360` com foco em valor, atividade e lifecycle.")
-    st.dataframe(customer_360_overview_df, use_container_width=True, hide_index=True)
+    st.dataframe(customer_360_overview_df, width="stretch", hide_index=True)
 
     st.subheader("Receita por canal")
     st.write(
         "Consolidacao de pedidos, receita bruta, desconto e receita liquida por canal a "
         "partir de `fct_orders`."
     )
-    st.dataframe(revenue_by_channel_df, use_container_width=True, hide_index=True)
+    st.dataframe(revenue_by_channel_df, width="stretch", hide_index=True)
     st.bar_chart(
         revenue_by_channel_df.set_index("sales_channel")[
             ["gross_revenue", "total_discount", "net_revenue"]
@@ -262,21 +262,21 @@ def main() -> None:
     st.write(
         "Distribuicao de clientes e receita liquida acumulada por segmento comercial."
     )
-    st.dataframe(customers_by_segment_df, use_container_width=True, hide_index=True)
+    st.dataframe(customers_by_segment_df, width="stretch", hide_index=True)
 
     st.subheader("Qualidade de pagamento")
     st.write(
         "Leitura operacional dos status de pagamento para apoiar acompanhamento financeiro "
         "e qualidade de dados."
     )
-    st.dataframe(payment_quality_df, use_container_width=True, hide_index=True)
+    st.dataframe(payment_quality_df, width="stretch", hide_index=True)
 
     st.subheader("Customer 360")
     st.write(
         "Tabela analitica detalhada para navegar pelos principais sinais de relacionamento, "
         "receita e comportamento digital."
     )
-    st.dataframe(customer_360_df, use_container_width=True, hide_index=True)
+    st.dataframe(customer_360_df, width="stretch", hide_index=True)
 
 
 if __name__ == "__main__":
