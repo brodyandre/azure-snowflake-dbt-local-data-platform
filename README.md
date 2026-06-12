@@ -51,7 +51,7 @@ Laboratorio local-first de Engenharia de Dados para demonstrar, em um repositori
 - [Visao geral](#visao-geral)
 - [Resumo executivo](#resumo-executivo)
 - [Objetivo do projeto](#objetivo-do-projeto)
-- [Responsabilidades da vaga demonstradas pelo projeto](#responsabilidades-da-vaga)
+- [Capacidades demonstradas no projeto](#responsabilidades-da-vaga)
 - [Arquitetura local](#arquitetura-local)
 - [Tecnologias utilizadas](#tecnologias-utilizadas)
 - [Como este projeto simula Azure + Snowflake localmente](#simulacao-azure-snowflake)
@@ -136,7 +136,7 @@ Construir um ambiente tecnico reproduzivel para demonstrar praticas de Engenhari
 
 <a id="responsabilidades-da-vaga"></a>
 
-## Responsabilidades da vaga demonstradas pelo projeto
+## Capacidades demonstradas no projeto
 
 | Requisito da vaga | Como o projeto demonstra | Arquivos ou componentes relacionados |
 | --- | --- | --- |
