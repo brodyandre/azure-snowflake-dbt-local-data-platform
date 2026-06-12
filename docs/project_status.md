@@ -17,6 +17,8 @@ O laboratorio ja cobre uma esteira local de Engenharia de Dados com ingestao, tr
 - SQL analitico e exemplos compativeis com Snowflake
 - dashboard local em Streamlit
 - workflows GitHub Actions para Python, dbt e documentacao
+- evidencias locais coletadas em `evidence/screenshots/`
+- logs e relatorios tecnicos consolidados em `evidence/execution-logs/`
 
 ## Validacoes disponiveis
 
@@ -44,12 +46,12 @@ make dashboard
 
 - nao usa Azure real
 - nao usa Snowflake real
-- depende de captura manual para evidencias visuais
+- ainda depende de evidencia de GitHub Actions apos a publicacao do repositorio
 - o fluxo streaming em CI e simplificado por `prepare-dbt-inputs`
 
 ## Proximos passos possiveis
 
-- versionar capturas reais em `evidence/screenshots/`
+- capturar a evidencia de GitHub Actions apos o push do repositorio
 - ampliar cobertura de testes Python
 - explorar modelos incrementais no dbt
 - adicionar exemplos de deploy controlado

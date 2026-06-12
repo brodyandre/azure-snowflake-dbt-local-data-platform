@@ -482,18 +482,34 @@ Elementos praticos ja presentes:
 
 ## Evidencias de execucao
 
-Os caminhos abaixo representam os prints esperados para publicacao no GitHub. Eles nao devem ser tratados como evidencias existentes ate que sejam capturados e versionados manualmente.
+As evidencias locais ja coletadas estao disponiveis em `evidence/screenshots/`. Os logs e relatorios operacionais ficam em `evidence/execution-logs/`.
 
-| Print esperado | Comando relacionado | Objetivo da evidencia | Status esperado |
-| --- | --- | --- | --- |
-| `evidence/screenshots/docker-compose-running.png` | `make up` / `make ps` | Mostrar servicos locais ativos | A capturar manualmente |
-| `evidence/screenshots/batch-pipeline-success.png` | `make batch` | Registrar ingestao batch concluida | A capturar manualmente |
-| `evidence/screenshots/streaming-demo-success.png` | `make streaming-demo` | Registrar publicacao e consumo de eventos | A capturar manualmente |
-| `evidence/screenshots/dbt-build-success.png` | `make dbt-build` | Mostrar build e testes dbt aprovados | A capturar manualmente |
-| `evidence/screenshots/pytest-success.png` | `make test` | Mostrar suite Python aprovada | A capturar manualmente |
-| `evidence/screenshots/quality-report-generated.png` | `make quality-report` | Mostrar geracao do relatorio de qualidade | A capturar manualmente |
-| `evidence/screenshots/streamlit-dashboard.png` | `make dashboard` | Mostrar camada de consumo analitico local | A capturar manualmente |
-| `evidence/screenshots/github-actions-success.png` | workflows do GitHub Actions | Mostrar validacoes em CI aprovadas | A capturar manualmente |
+### Evidencias coletadas
+
+| Evidencia | Arquivo | O que comprova |
+| --- | --- | --- |
+| Docker Compose em execucao | `evidence/screenshots/docker-compose-running.png` | Servicos locais ativos para o laboratorio |
+| Pipeline batch concluido | `evidence/screenshots/batch-pipeline-success.png` | Ingestao batch local executada com sucesso |
+| Streaming demo concluido | `evidence/screenshots/streaming-demo-success.png` | Publicacao e consumo de eventos via Redpanda |
+| dbt build aprovado | `evidence/screenshots/dbt-build-success.png` | Build e testes dbt executados com sucesso |
+| Testes Python aprovados | `evidence/screenshots/pytest-success.png` | Suite `pytest` executada com sucesso |
+| Relatorio de qualidade gerado | `evidence/screenshots/quality-report-generated.png` | Geracao do relatorio local de qualidade |
+| Dashboard Streamlit | `evidence/screenshots/streamlit-dashboard.png` | Camada de consumo analitico local em funcionamento |
+
+### Logs e relatorios disponiveis
+
+| Evidencia | Arquivo | O que comprova |
+| --- | --- | --- |
+| Relatorio de qualidade de dados | `evidence/execution-logs/data_quality_report.md` | Resumo tecnico de qualidade por dataset |
+| Auditoria de pipelines | `evidence/execution-logs/pipeline_audit.jsonl` | Historico de execucao de pipelines e status |
+| Log do Docker Compose | `evidence/execution-logs/docker-compose-running.log` | Registro textual da subida dos servicos locais |
+| Log do streaming demo | `evidence/execution-logs/streaming-demo-success.log` | Registro textual da execucao do fluxo streaming |
+
+### Evidencia futura apos publicacao
+
+| Evidencia | Arquivo | O que comprova |
+| --- | --- | --- |
+| GitHub Actions aprovados | `evidence/screenshots/github-actions-success.png` | Validacoes em CI apos publicacao do repositorio no GitHub |
 
 [Voltar ao indice](#indice)
 
@@ -513,8 +529,8 @@ Esse guia cobre desde `python3` no WSL2 ate problemas de `events.jsonl`, Redpand
 
 ## Proximos passos
 
-- adicionar capturas reais de execucao na pasta `evidence/screenshots/`
-- publicar evidencias do dashboard e dos workflows
+- adicionar evidencia visual dos workflows apos a publicacao no GitHub
+- complementar a galeria de evidencias conforme novas evolucoes do laboratorio
 - testar cenarios incrementais no dbt
 - incluir cobertura de testes Python
 - explorar uma versao de deploy controlado em ambiente cloud ou local mais proximo de producao
