@@ -223,6 +223,10 @@ make logs
 make down
 ```
 
+Evidencia da infraestrutura local em execucao no Docker Compose:
+
+<img src="evidence/screenshots/docker-compose-running.png" alt="Docker Compose com Azurite, Redpanda e Redpanda Console em execucao" width="1000" />
+
 [Voltar ao indice](#indice)
 
 <a id="fontes-de-dados"></a>
@@ -272,6 +276,10 @@ Validacoes principais:
 - geracao de `net_amount`
 - auditoria em `evidence/execution-logs/pipeline_audit.jsonl`
 
+Evidencia da execucao bem-sucedida do pipeline batch:
+
+<img src="evidence/screenshots/batch-pipeline-success.png" alt="Execucao do make batch com sucesso" width="1000" />
+
 [Voltar ao indice](#indice)
 
 <a id="pipeline-streaming"></a>
@@ -291,6 +299,10 @@ make streaming-producer
 make streaming-consumer
 make streaming-demo
 ```
+
+Evidencia do fluxo streaming local com producer e consumer:
+
+<img src="evidence/screenshots/streaming-demo-success.png" alt="Execucao do make streaming-demo com sucesso" width="1000" />
 
 [Voltar ao indice](#indice)
 
@@ -316,6 +328,10 @@ make dbt-build
 ```
 
 Observacao importante: os modelos `staging` que leem arquivos da landing foram materializados como `table` para evitar problemas de resolucao de caminhos relativos quando o DuckDB e consultado por ferramentas externas, como o dashboard Streamlit.
+
+Evidencia do `dbt build` executado com sucesso:
+
+<img src="evidence/screenshots/dbt-build-success.png" alt="Execucao do make dbt-build com sucesso" width="1000" />
 
 [Voltar ao indice](#indice)
 
@@ -356,6 +372,14 @@ Comandos:
 make test
 make quality-report
 ```
+
+Evidencia da suite Python aprovada:
+
+<img src="evidence/screenshots/pytest-success.png" alt="Execucao do make test com sucesso" width="1000" />
+
+Evidencia da geracao do relatorio de qualidade:
+
+<img src="evidence/screenshots/quality-report-generated.png" alt="Geracao do relatorio de qualidade de dados" width="1000" />
 
 [Voltar ao indice](#indice)
 
@@ -422,6 +446,10 @@ URL esperada:
 
 - `http://localhost:8501`
 
+Evidencia do dashboard analitico local em execucao:
+
+<img src="evidence/screenshots/streamlit-dashboard.png" alt="Dashboard Streamlit consumindo o DuckDB local" width="1000" />
+
 [Voltar ao indice](#indice)
 
 <a id="ci-cd-com-github-actions"></a>
@@ -482,19 +510,21 @@ Elementos praticos ja presentes:
 
 ## Evidencias de execucao
 
-As evidencias locais ja coletadas estao disponiveis em `evidence/screenshots/`. Os logs e relatorios operacionais ficam em `evidence/execution-logs/`.
+As evidencias visuais principais agora aparecem nas secoes corretas deste README, acompanhando cada etapa do laboratorio no GitHub. Os arquivos-fonte continuam versionados em `evidence/screenshots/`, enquanto logs e relatorios operacionais ficam em `evidence/execution-logs/`.
 
 ### Evidencias coletadas
 
+Prints disponiveis em `evidence/screenshots/`. Logs e relatorios disponiveis em `evidence/execution-logs/`.
+
 | Evidencia | Arquivo | O que comprova |
 | --- | --- | --- |
-| Docker Compose em execucao | `evidence/screenshots/docker-compose-running.png` | Servicos locais ativos para o laboratorio |
-| Pipeline batch concluido | `evidence/screenshots/batch-pipeline-success.png` | Ingestao batch local executada com sucesso |
-| Streaming demo concluido | `evidence/screenshots/streaming-demo-success.png` | Publicacao e consumo de eventos via Redpanda |
-| dbt build aprovado | `evidence/screenshots/dbt-build-success.png` | Build e testes dbt executados com sucesso |
-| Testes Python aprovados | `evidence/screenshots/pytest-success.png` | Suite `pytest` executada com sucesso |
-| Relatorio de qualidade gerado | `evidence/screenshots/quality-report-generated.png` | Geracao do relatorio local de qualidade |
-| Dashboard Streamlit | `evidence/screenshots/streamlit-dashboard.png` | Camada de consumo analitico local em funcionamento |
+| Docker Compose em execucao | `evidence/screenshots/docker-compose-running.png` | Servicos locais ativos para o laboratorio; imagem inserida na secao `Servicos locais com Docker Compose` |
+| Pipeline batch concluido | `evidence/screenshots/batch-pipeline-success.png` | Ingestao batch local executada com sucesso; imagem inserida na secao `Pipeline batch` |
+| Streaming demo concluido | `evidence/screenshots/streaming-demo-success.png` | Publicacao e consumo de eventos via Redpanda; imagem inserida na secao `Pipeline streaming` |
+| dbt build aprovado | `evidence/screenshots/dbt-build-success.png` | Build e testes dbt executados com sucesso; imagem inserida na secao `Transformacoes com dbt` |
+| Testes Python aprovados | `evidence/screenshots/pytest-success.png` | Suite `pytest` executada com sucesso; imagem inserida na secao `Qualidade de dados` |
+| Relatorio de qualidade gerado | `evidence/screenshots/quality-report-generated.png` | Geracao do relatorio local de qualidade; imagem inserida na secao `Qualidade de dados` |
+| Dashboard Streamlit | `evidence/screenshots/streamlit-dashboard.png` | Camada de consumo analitico local em funcionamento; imagem inserida na secao `Dashboard local` |
 
 ### Logs e relatorios disponiveis
 
