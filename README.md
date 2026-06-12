@@ -1,14 +1,55 @@
+<div align="center">
+
 # azure-snowflake-dbt-local-data-platform
+
+Laboratorio local-first de Engenharia de Dados para demonstrar, em um repositorio unico, uma plataforma inspirada em Azure + Snowflake com batch, streaming, dbt, DuckDB, qualidade de dados, dashboard e CI/CD.
 
 [![CI - Python Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/ci.yml)
 [![CI - dbt Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/dbt-validation.yml)
 [![CI - Documentation Validation](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml/badge.svg)](https://github.com/brodyandre/azure-snowflake-dbt-local-data-platform/actions/workflows/docs-validation.yml)
 
+<br />
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![dbt Core](https://img.shields.io/badge/dbt-Core-FC694D?logo=dbt&logoColor=white)
+![DuckDB](https://img.shields.io/badge/DuckDB-Local%20Warehouse-FFF000?logo=duckdb&logoColor=black)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)
+![Redpanda](https://img.shields.io/badge/Redpanda-Kafka%20Compatible-AE2BE2)
+![Azurite](https://img.shields.io/badge/Azurite-Blob%20Storage%20Simulation-0078D4)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-2088FF?logo=githubactions&logoColor=white)
+![WSL2](https://img.shields.io/badge/WSL2-Ubuntu%20on%20Windows-4EAA25?logo=linux&logoColor=white)
+
+<br />
+
+<a href="#como-executar-localmente"><strong>Executar localmente</strong></a>
+&nbsp;|&nbsp;
+<a href="docs/architecture.md"><strong>Arquitetura</strong></a>
+&nbsp;|&nbsp;
+<a href="#pipeline-batch"><strong>Batch</strong></a>
+&nbsp;|&nbsp;
+<a href="#pipeline-streaming"><strong>Streaming</strong></a>
+&nbsp;|&nbsp;
+<a href="#dashboard-local"><strong>Dashboard</strong></a>
+&nbsp;|&nbsp;
+<a href="#evidencias-de-execucao"><strong>Evidencias</strong></a>
+
+</div>
+
+<p align="center">
+  <img src="evidence/screenshots/streamlit-dashboard.png" alt="Preview do dashboard analitico local em Streamlit" width="1000" />
+</p>
+
+> Projeto demonstrativo, local-first e cloud-compatible.
+> Usa DuckDB como warehouse local, Azurite para simular Azure Blob Storage e Redpanda para representar um fluxo inspirado em Azure Event Hubs/Kafka.
+> Nao usa Azure real nem Snowflake real.
+
 <a id="indice"></a>
 
-## Indice
+<details>
+<summary><strong>Indice completo</strong></summary>
 
 - [Visao geral](#visao-geral)
+- [Resumo executivo](#resumo-executivo)
 - [Objetivo do projeto](#objetivo-do-projeto)
 - [Responsabilidades da vaga demonstradas pelo projeto](#responsabilidades-da-vaga)
 - [Arquitetura local](#arquitetura-local)
@@ -33,6 +74,8 @@
 - [Proximos passos](#proximos-passos)
 - [Autor](#autor)
 
+</details>
+
 <a id="visao-geral"></a>
 
 ## Visao geral
@@ -50,6 +93,28 @@ Documentacao complementar:
 - [Migracao para Azure + Snowflake](docs/migration_to_azure_snowflake.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Status do projeto](docs/project_status.md)
+
+[Voltar ao indice](#indice)
+
+<a id="resumo-executivo"></a>
+
+## Resumo executivo
+
+| Pilar | O que o repositorio demonstra | Stack local |
+| --- | --- | --- |
+| Ingestao batch | Leitura de fontes CSV/JSON, validacao minima e publicacao em parquet | Python, pandas, PyArrow |
+| Streaming | Producer e consumer Kafka-compatible para eventos sinteticos | Redpanda, JSONL |
+| Modelagem analitica | Organizacao em `staging`, `intermediate` e `marts` | dbt Core, DuckDB |
+| Qualidade e governanca | Contratos, testes, auditoria e relatorio operacional | pytest, dbt tests, JSONL audit |
+| Consumo analitico | Dashboard local com KPIs e visoes derivadas dos marts | Streamlit, SQL, DuckDB |
+| CI/CD | Validacoes automatizadas para Python, dbt e documentacao | GitHub Actions, Makefile |
+
+### O que torna este laboratorio forte no GitHub
+
+- demonstra uma arquitetura end-to-end sem depender de cloud paga
+- conecta ingestao, transformacao, qualidade, consumo e CI/CD no mesmo repositorio
+- usa ferramentas reconhecidas no mercado com mapeamento conceitual para Azure + Snowflake
+- inclui evidencias reais de execucao, logs operacionais e documentacao de migracao
 
 [Voltar ao indice](#indice)
 
@@ -119,16 +184,17 @@ Esse desenho ajuda a explicar a separacao entre ingestao, transformacao, consumo
 
 ## Tecnologias utilizadas
 
-- Python para pipelines, validacoes e utilitarios
-- DuckDB como warehouse analitico local
-- dbt Core com adapter DuckDB para modelagem e testes
-- Streamlit para camada de consumo analitico local
-- Redpanda para demonstracao de fluxo streaming local
-- Azurite para simular padroes de object storage
-- SQL para modelagem, analise e compatibilidade conceitual com Snowflake
-- pytest para testes Python
-- GitHub Actions para CI/CD
-- Docker Compose para subir servicos locais
+| Categoria | Tecnologias |
+| --- | --- |
+| Linguagem e utilitarios | Python, pathlib, pandas, PyArrow, python-dotenv |
+| Armazenamento e analytics | DuckDB como warehouse local |
+| Transformacao | dbt Core com adapter DuckDB |
+| Streaming | Redpanda como broker Kafka-compatible |
+| Simulacao de storage cloud | Azurite para Blob Storage local |
+| Consumo | Streamlit para dashboard analitico |
+| Qualidade | pytest, dbt tests, relatorio de qualidade |
+| Automacao | Makefile, Docker Compose, GitHub Actions |
+| SQL | consultas analiticas e scripts compativeis com Snowflake |
 
 [Voltar ao indice](#indice)
 
@@ -153,7 +219,7 @@ Esse desenho ajuda a explicar a separacao entre ingestao, transformacao, consumo
 - O projeto nao executa Azure real nem Snowflake real localmente.
 - O fluxo streaming em CI nao sobe broker; usa preparo de arquivos para manter a validacao simples.
 - O ambiente local nao replica elasticidade, seguranca gerenciada, custo e operacao de uma plataforma cloud real.
-- As evidencias visuais precisam ser capturadas manualmente pelo mantenedor e versionadas quando fizer sentido.
+- Novas evidencias visuais dependem de captura manual e versionamento pelo mantenedor quando houver novas entregas.
 
 [Voltar ao indice](#indice)
 
@@ -161,7 +227,14 @@ Esse desenho ajuda a explicar a separacao entre ingestao, transformacao, consumo
 
 ## Como executar localmente
 
-Fluxo recomendado para demonstracao completa:
+Roteiro recomendado para demonstracao completa do laboratorio:
+
+1. subir a infraestrutura local
+2. executar a ingestao batch
+3. publicar e consumir eventos
+4. construir os modelos dbt
+5. validar testes e relatorio de qualidade
+6. abrir o dashboard
 
 ```bash
 make up
@@ -173,7 +246,7 @@ make quality-report
 make dashboard
 ```
 
-Outros comandos uteis:
+Atalhos uteis para validacao rapida:
 
 ```bash
 make ci-python
